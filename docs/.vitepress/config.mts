@@ -2,6 +2,7 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  base: process.env.VITEPRESS_BASE ?? '/',
   title: "Hello MLSys",
   description: "从成熟 AI 系统的现象出发，学习测量、瓶颈分析和生产取舍。",
   themeConfig: {
