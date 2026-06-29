@@ -1,0 +1,18 @@
+# 11. Diffusion Serving
+
+> 状态：占位草稿。
+
+## 核心问题
+
+生成一张图为什么慢，成本在哪里？
+
+## 这篇文章要补什么
+
+- 用 diffusers 观察采样步数、scheduler、分辨率对延迟和显存的影响。
+- 拆解 text encoder、denoiser、VAE 等 pipeline 阶段。
+- 对比 diffusion serving 和 LLM serving 的系统差异。
+
+## 预期产出
+
+- diffusion pipeline 延迟拆解
+- 采样步数和质量/成本取舍笔记
