@@ -10,7 +10,8 @@ export default defineConfig({
     nav: [
       { text: '首页', link: '/' },
       { text: '学习地图', link: '/guide/learning-map' },
-      { text: '课程大纲', link: '/outline' }
+      { text: '课程大纲', link: '/outline' },
+      { text: '参考资料', link: '/references/' }
     ],
 
     sidebar: [
@@ -27,7 +28,8 @@ export default defineConfig({
       {
         text: '课程草稿',
         items: [
-          { text: '课程大纲', link: '/outline' }
+          { text: '课程大纲', link: '/outline' },
+          { text: '参考资料', link: '/references/' }
         ]
       },
       {
@@ -41,7 +43,7 @@ export default defineConfig({
           { text: '5. 训练流水线', link: '/modules/05-training-pipeline' },
           { text: '6. 预训练与微调系统', link: '/modules/06-pretraining-finetuning' },
           { text: '7. 训练优化', link: '/modules/07-training-optimization' },
-          { text: '8. 分布式训练入门', link: '/modules/08-distributed-training' },
+          { text: '8. 并行、通信与拓扑', link: '/modules/08-distributed-training' },
           { text: '9. 推理服务基础', link: '/modules/09-serving-basics' },
           { text: '10. LLM Serving', link: '/modules/10-llm-serving' },
           { text: '11. Diffusion Serving', link: '/modules/11-diffusion-serving' },
