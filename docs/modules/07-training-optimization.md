@@ -2,6 +2,14 @@
 
 > 状态：占位草稿。
 
+## 在 MLSys 地图中的位置
+
+- 生命周期位置：训练系统的单卡/单机优化层。
+- 系统层次：训练 step、显存优化、重计算、精度和优化器状态。
+- 主要资源：显存、计算时间、吞吐、数值稳定性。
+- 典型症状：OOM、batch size 上不去、AMP 后结果不稳定、checkpointing 省显存但变慢。
+- 关联模块：模块 3 的显存构成，模块 5 的训练流水线，模块 8 的分布式并行。
+
 ## 核心问题
 
 AMP、checkpointing、gradient accumulation 解决什么？
@@ -11,8 +19,14 @@ AMP、checkpointing、gradient accumulation 解决什么？
 - 在成熟训练脚本上观察 AMP、gradient accumulation、activation checkpointing 的影响。
 - 解释显存、吞吐、数值稳定性之间的取舍。
 - 让学生先看指标变化，再回头理解机制。
+- 把“先在单卡上省显存”作为进入多卡并行前的第一步。
 
 ## 预期产出
 
 - 显存和吞吐对比实验
 - 优化手段取舍笔记
+- 从 OOM 到优化策略的决策树
+
+## 脚注与参考索引
+
+> 待补：本章参考资料、论文和工程文档。

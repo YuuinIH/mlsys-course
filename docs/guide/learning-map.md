@@ -35,7 +35,7 @@
 | 5 | [深度学习训练流水线](/modules/05-training-pipeline) | 占位 | 一个 training step 的时间花在哪里？ | 训练 step profiling 报告 |
 | 6 | [预训练与微调系统](/modules/06-pretraining-finetuning) | 占位 | tokens/sec、batch、序列长度、显存之间怎么权衡？ | 现成训练栈上的 pretraining / fine-tuning 分析 |
 | 7 | [训练优化](/modules/07-training-optimization) | 占位 | AMP、checkpointing、gradient accumulation 解决什么？ | 显存和吞吐对比实验 |
-| 8 | [分布式训练入门](/modules/08-distributed-training) | 占位 | 多卡为什么不线性加速？ | DDP/FSDP/ZeRO 动机总结，可选实验 |
+| 8 | [并行策略、通信与拓扑](/modules/08-distributed-training) | 占位 | 模型装不下、跑不快以后，系统如何把计算、参数和通信摊到多卡/多机上？ | 并行策略、collective 和拓扑关系图 |
 | 9 | [推理服务基础](/modules/09-serving-basics) | 占位 | 模型能跑，服务为什么还慢？ | serving 工具或服务包装的压测报告 |
 | 10 | [LLM Serving](/modules/10-llm-serving) | 占位 | prefill、decode、KV cache、batching 在解决什么？ | LLM serving 现象分析 |
 | 11 | [Diffusion Serving](/modules/11-diffusion-serving) | 占位 | 生成一张图为什么慢，成本在哪里？ | diffusion pipeline 延迟拆解 |
