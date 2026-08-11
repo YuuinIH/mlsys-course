@@ -1,57 +1,80 @@
 import { defineConfig } from 'vitepress'
 
-// https://vitepress.dev/reference/site-config
 export default defineConfig({
   base: process.env.VITEPRESS_BASE ?? '/',
-  title: "Hello MLSys",
-  description: "从成熟 AI 系统的现象出发，学习测量、瓶颈分析和生产取舍。",
+  title: 'MLSys Course',
+  description: '从一段 ML 代码到可扩展、可观测的生产系统。',
   themeConfig: {
-    // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: '首页', link: '/' },
       { text: '学习地图', link: '/guide/learning-map' },
-      { text: '课程大纲', link: '/outline' },
+      { text: '课程设计', link: '/outline' },
       { text: '参考资料', link: '/references/' }
     ],
-
     sidebar: [
       {
         text: '开始',
         items: [
           { text: '课程简介', link: '/' },
           { text: '学习地图', link: '/guide/learning-map' },
-          { text: '章节模板', link: '/guide/chapter-template' },
+          { text: '课程设计', link: '/outline' },
+          { text: '如何写一章', link: '/guide/chapter-template' },
           { text: '贡献指南', link: '/guide/contributing' },
           { text: '仓库结构', link: '/guide/repo-structure' }
         ]
       },
       {
-        text: '课程草稿',
+        text: 'Part 0 · Systems Thinking',
+        collapsed: false,
         items: [
-          { text: '课程大纲', link: '/outline' },
-          { text: '参考资料', link: '/references/' }
+          { text: '0. GPU 利用率只有 30%', link: '/modules/00-systems-thinking' },
+          { text: '1. Benchmark 可信吗', link: '/modules/01-measurement' }
         ]
       },
       {
-        text: '学习模块',
+        text: 'Part 1 · Understanding Workloads',
         items: [
-          { text: '0. MLSys 地图', link: '/modules/00-map' },
-          { text: '1. 工作负载速览', link: '/modules/01-workloads' },
-          { text: '2. 指标与 Profiler', link: '/modules/02-profiler-benchmark' },
-          { text: '3. 计算、内存与矩阵乘', link: '/modules/03-compute-memory' },
-          { text: '4. GPU 与并行直觉', link: '/modules/04-gpu-parallelism' },
-          { text: '5. 训练流水线', link: '/modules/05-training-pipeline' },
-          { text: '6. 预训练与微调系统', link: '/modules/06-pretraining-finetuning' },
-          { text: '7. 训练优化', link: '/modules/07-training-optimization' },
-          { text: '8. 并行、通信与拓扑', link: '/modules/08-distributed-training' },
-          { text: '9. 推理服务基础', link: '/modules/09-serving-basics' },
-          { text: '10. LLM Serving', link: '/modules/10-llm-serving' },
-          { text: '11. Diffusion Serving', link: '/modules/11-diffusion-serving' },
-          { text: '12. 多模态流水线', link: '/modules/12-multimodal-pipeline' },
-          { text: '13. 模型压缩与加速', link: '/modules/13-compression-acceleration' },
-          { text: '14. MLOps 与生产闭环', link: '/modules/14-mlops' },
-          { text: '15. 成本、SLO 与案例', link: '/modules/15-cost-slo-cases' },
-          { text: '16. 综合项目', link: '/modules/16-final-project' }
+          { text: '2. 训练与推理 workload', link: '/modules/02-workloads' },
+          { text: '3. GPU 为什么喂不饱', link: '/modules/03-gpu-foundations' },
+          { text: '4. Training step 解剖', link: '/modules/04-training-anatomy' }
+        ]
+      },
+      {
+        text: 'Part 2 · Distributed Training',
+        items: [
+          { text: '5. 模型或 batch 装不下', link: '/modules/05-training-memory' },
+          { text: '6. 多卡为何不线性加速', link: '/modules/06-distributed-training' }
+        ]
+      },
+      {
+        text: 'Part 3 · Script to Cluster',
+        items: [
+          { text: '7. 在我机器上能跑', link: '/modules/07-containers' },
+          { text: '8. 有 GPU 却一直 pending', link: '/modules/08-cluster-scheduling' },
+          { text: '9. 失败后如何继续', link: '/modules/09-reliability' }
+        ]
+      },
+      {
+        text: 'Part 4 · Model to Service',
+        items: [
+          { text: '10. 平均延迟的陷阱', link: '/modules/10-serving' },
+          { text: '11. LLM 的 prefill 与 decode', link: '/modules/11-llm-serving' },
+          { text: '12. 多阶段 pipeline', link: '/modules/12-multimodal-serving' },
+          { text: '13. 应该先优化什么', link: '/modules/13-serving-optimization' }
+        ]
+      },
+      {
+        text: 'Part 5 · Operating Systems',
+        items: [
+          { text: '14. SLO 为什么失守', link: '/modules/14-observability' },
+          { text: '15. 云账单为什么上升', link: '/modules/15-cost-capacity-slo' }
+        ]
+      },
+      {
+        text: 'Part 6 · System Design',
+        items: [
+          { text: '16. 设计并为系统辩护', link: '/modules/16-final-project' },
+          { text: '参考资料', link: '/references/' }
         ]
       }
     ]
