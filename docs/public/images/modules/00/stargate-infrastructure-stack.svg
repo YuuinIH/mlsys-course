@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="570" viewBox="0 0 960 570" role="img" aria-labelledby="title desc">
+  <title id="title">Stargate 基础设施的五个层次</title>
+  <desc id="desc">从钱和组织开始，依次经过土地电力建筑、芯片内存网络存储、训练与推理系统，最终形成工业和国家战略能力。每一层都依赖下方层次。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" class="arrow-head"/></marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; fill: #182230; }
+      .layer { stroke-width: 2.5; }
+      .l1 { fill: #f5f7fa; stroke: #9aa6b5; }
+      .l2 { fill: #edf4ff; stroke: #4d77c7; }
+      .l3 { fill: #eef8f2; stroke: #4a8c67; }
+      .l4 { fill: #fff4df; stroke: #d38a18; }
+      .l5 { fill: #f5efff; stroke: #8061b3; }
+      .num { font-size: 25px; font-weight: 600; text-anchor: middle; }
+      .title { font-size: 20px; font-weight: 600; }
+      .sub { font-size: 15px; fill: #5e6b7a; }
+      .flow { fill: none; stroke: #687789; stroke-width: 3; marker-end: url(#arrow); }
+      .arrow-head { fill: #687789; }
+      @media (prefers-color-scheme: dark) {
+        text { fill: #e9eef5; }
+        .l1 { fill: #252f3d; stroke: #718095; }
+        .l2 { fill: #1d3154; stroke: #7ca6ef; }
+        .l3 { fill: #18372a; stroke: #72b48e; }
+        .l4 { fill: #4b3718; stroke: #e3a84c; }
+        .l5 { fill: #34264b; stroke: #ad8bdd; }
+        .sub { fill: #bac4d1; }
+        .flow { stroke: #9aa9bb; }
+        .arrow-head { fill: #9aa9bb; }
+      }
+    </style>
+  </defs>
+
+  <rect x="70" y="35" width="820" height="82" rx="18" class="layer l1"/>
+  <circle cx="120" cy="76" r="25" class="layer l1"/><text x="120" y="84" class="num">1</text>
+  <text x="165" y="70" class="title">钱和组织</text><text x="165" y="96" class="sub">资本承诺 · 项目公司 · 财务责任 · 运营责任 · 合作伙伴</text>
+  <path d="M480 117 V137" class="flow"/>
+
+  <rect x="90" y="145" width="780" height="82" rx="18" class="layer l2"/>
+  <circle cx="140" cy="186" r="25" class="layer l2"/><text x="140" y="194" class="num">2</text>
+  <text x="185" y="180" class="title">土地、电力和建筑</text><text x="185" y="206" class="sub">园区 · 电网接入 · 变电设施 · 备用电源 · 冷却 · 物理安全</text>
+  <path d="M480 227 V247" class="flow"/>
+
+  <rect x="110" y="255" width="740" height="82" rx="18" class="layer l3"/>
+  <circle cx="160" cy="296" r="25" class="layer l3"/><text x="160" y="304" class="num">3</text>
+  <text x="205" y="290" class="title">芯片、内存、网络和存储</text><text x="205" y="316" class="sub">GPU · HBM · 服务器 · NIC · 交换机 · 光模块 · 高速互连 · checkpoint</text>
+  <path d="M480 337 V357" class="flow"/>
+
+  <rect x="130" y="365" width="700" height="82" rx="18" class="layer l4"/>
+  <circle cx="180" cy="406" r="25" class="layer l4"/><text x="180" y="414" class="num">4</text>
+  <text x="225" y="400" class="title">训练与推理系统</text><text x="225" y="426" class="sub">并行 · 调度 · 数据供给 · 故障恢复 · 资源隔离 · 在线服务</text>
+  <path d="M480 447 V467" class="flow"/>
+
+  <rect x="150" y="475" width="660" height="82" rx="18" class="layer l5"/>
+  <circle cx="200" cy="516" r="25" class="layer l5"/><text x="200" y="524" class="num">5</text>
+  <text x="245" y="510" class="title">工业与国家战略能力</text><text x="245" y="536" class="sub">AI 能力 · 就业 · 再工业化 · 供应链 · 国家安全</text>
+</svg>

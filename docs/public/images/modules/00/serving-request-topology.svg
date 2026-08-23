@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520" role="img" aria-labelledby="title desc">
+  <title id="title">模型服务的请求路径与资源拓扑</title>
+  <desc id="desc">五个用户的请求依次进入 API 服务、等待队列、调度器和模型运行时。运行时使用 CPU、内存、GPU 与显存，生成的 token 再流回用户。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrow-head"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; fill: #182230; }
+      .node { fill: #ffffff; stroke: #aeb8c6; stroke-width: 2; }
+      .primary { fill: #edf4ff; stroke: #4d77c7; }
+      .resource { fill: #f5f7fa; stroke: #9aa6b5; }
+      .accent { fill: #fff4df; stroke: #d38a18; }
+      .label { font-size: 18px; font-weight: 600; text-anchor: middle; }
+      .sub { font-size: 14px; fill: #5e6b7a; text-anchor: middle; }
+      .flow { fill: none; stroke: #4d77c7; stroke-width: 3; marker-end: url(#arrow); }
+      .support { fill: none; stroke: #7b8796; stroke-width: 2.5; marker-end: url(#arrow); }
+      .return { fill: none; stroke: #d38a18; stroke-width: 3; stroke-dasharray: 8 7; marker-end: url(#arrow); }
+      .arrow-head { fill: #4d77c7; }
+      .queue-line { stroke: #7b8796; stroke-width: 3; stroke-linecap: round; }
+      @media (prefers-color-scheme: dark) {
+        text { fill: #e9eef5; }
+        .node { fill: #202936; stroke: #667386; }
+        .primary { fill: #1d3154; stroke: #7ca6ef; }
+        .resource { fill: #252f3d; stroke: #718095; }
+        .accent { fill: #4b3718; stroke: #e3a84c; }
+        .sub { fill: #bac4d1; }
+        .flow { stroke: #7ca6ef; }
+        .support { stroke: #9aa9bb; }
+        .return { stroke: #e3a84c; }
+        .arrow-head { fill: #7ca6ef; }
+        .queue-line { stroke: #9aa9bb; }
+      }
+    </style>
+  </defs>
+
+  <rect x="30" y="150" width="140" height="120" rx="18" class="node"/>
+  <text x="100" y="188" class="label">多个用户</text>
+  <circle cx="65" cy="225" r="8" class="primary"/>
+  <circle cx="88" cy="225" r="8" class="primary"/>
+  <circle cx="111" cy="225" r="8" class="primary"/>
+  <circle cx="134" cy="225" r="8" class="primary"/>
+  <text x="100" y="254" class="sub">同时发送请求</text>
+
+  <rect x="215" y="165" width="125" height="90" rx="16" class="primary"/>
+  <text x="277.5" y="204" class="label">API 服务</text>
+  <text x="277.5" y="230" class="sub">接收与校验</text>
+
+  <rect x="385" y="150" width="125" height="120" rx="16" class="accent"/>
+  <text x="447.5" y="184" class="label">等待队列</text>
+  <line x1="420" y1="210" x2="475" y2="210" class="queue-line"/>
+  <line x1="420" y1="228" x2="465" y2="228" class="queue-line"/>
+  <line x1="420" y1="246" x2="451" y2="246" class="queue-line"/>
+
+  <rect x="555" y="150" width="150" height="120" rx="16" class="primary"/>
+  <text x="630" y="190" class="label">调度 / Runtime</text>
+  <text x="630" y="219" class="sub">组 batch · 排次序</text>
+  <text x="630" y="243" class="sub">管理执行状态</text>
+
+  <rect x="750" y="150" width="165" height="120" rx="16" class="primary"/>
+  <text x="832.5" y="190" class="label">模型执行</text>
+  <text x="832.5" y="219" class="sub">prefill / decode</text>
+  <text x="832.5" y="243" class="sub">逐步生成 token</text>
+
+  <path d="M170 210 H215" class="flow"/>
+  <path d="M340 210 H385" class="flow"/>
+  <path d="M510 210 H555" class="flow"/>
+  <path d="M705 210 H750" class="flow"/>
+  <text x="192" y="195" class="sub">request</text>
+
+  <rect x="545" y="345" width="115" height="75" rx="14" class="resource"/>
+  <text x="602.5" y="378" class="label">CPU</text>
+  <text x="602.5" y="402" class="sub">准备与控制</text>
+  <rect x="680" y="345" width="115" height="75" rx="14" class="resource"/>
+  <text x="737.5" y="378" class="label">内存</text>
+  <text x="737.5" y="402" class="sub">输入与状态</text>
+  <rect x="815" y="345" width="115" height="75" rx="14" class="resource"/>
+  <text x="872.5" y="378" class="label">GPU / 显存</text>
+  <text x="872.5" y="402" class="sub">权重 · KV Cache</text>
+
+  <path d="M610 270 V345" class="support"/>
+  <path d="M660 382 H680" class="support"/>
+  <path d="M832 270 V315 H872 V345" class="support"/>
+
+  <path d="M832 270 V465 H100 V270" class="return"/>
+  <text x="475" y="490" class="sub">token stream：执行完成不等于用户没有等待</text>
+</svg>

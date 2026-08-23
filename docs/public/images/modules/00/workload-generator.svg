@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">从模型选择到机器负载</title>
+  <desc id="desc">模型参数量、序列长度、批大小、模型结构、训练算法和推理策略，经由 workload 转译为计算、内存、通信、输入输出、同步以及状态与恢复需求。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" class="arrow-head"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; fill: #182230; }
+      .group { fill: #ffffff; stroke: #aeb8c6; stroke-width: 2; }
+      .translator { fill: #edf4ff; stroke: #4d77c7; stroke-width: 2.5; }
+      .demand { fill: #f5f7fa; stroke: #9aa6b5; stroke-width: 2; }
+      .title { font-size: 20px; font-weight: 600; text-anchor: middle; }
+      .item { font-size: 16px; text-anchor: middle; }
+      .sub { font-size: 14px; fill: #5e6b7a; text-anchor: middle; }
+      .flow { fill: none; stroke: #4d77c7; stroke-width: 3; marker-end: url(#arrow); }
+      .arrow-head { fill: #4d77c7; }
+      @media (prefers-color-scheme: dark) {
+        text { fill: #e9eef5; }
+        .group { fill: #202936; stroke: #667386; }
+        .translator { fill: #1d3154; stroke: #7ca6ef; }
+        .demand { fill: #252f3d; stroke: #718095; }
+        .sub { fill: #bac4d1; }
+        .flow { stroke: #7ca6ef; }
+        .arrow-head { fill: #7ca6ef; }
+      }
+    </style>
+  </defs>
+
+  <rect x="30" y="55" width="255" height="430" rx="22" class="group"/>
+  <text x="157.5" y="98" class="title">模型与算法选择</text>
+  <text x="157.5" y="148" class="item">参数量</text>
+  <text x="157.5" y="198" class="item">序列长度</text>
+  <text x="157.5" y="248" class="item">Batch size</text>
+  <text x="157.5" y="298" class="item">模型结构</text>
+  <text x="157.5" y="348" class="item">训练算法</text>
+  <text x="157.5" y="398" class="item">推理策略</text>
+  <text x="157.5" y="450" class="sub">决定“要做什么”</text>
+
+  <path d="M285 270 H365" class="flow"/>
+  <rect x="365" y="165" width="220" height="210" rx="110" class="translator"/>
+  <text x="475" y="248" class="title">Workload</text>
+  <text x="475" y="278" class="title">Generator</text>
+  <text x="475" y="315" class="sub">把算法继续向下翻译</text>
+  <path d="M585 270 H655" class="flow"/>
+
+  <rect x="655" y="45" width="130" height="95" rx="16" class="demand"/>
+  <text x="720" y="84" class="title">计算</text>
+  <text x="720" y="112" class="sub">算子与并行</text>
+  <rect x="805" y="45" width="130" height="95" rx="16" class="demand"/>
+  <text x="870" y="84" class="title">内存</text>
+  <text x="870" y="112" class="sub">容量与访存</text>
+
+  <rect x="655" y="165" width="130" height="95" rx="16" class="demand"/>
+  <text x="720" y="204" class="title">通信</text>
+  <text x="720" y="232" class="sub">数据量与拓扑</text>
+  <rect x="805" y="165" width="130" height="95" rx="16" class="demand"/>
+  <text x="870" y="204" class="title">I/O</text>
+  <text x="870" y="232" class="sub">存储与数据移动</text>
+
+  <rect x="655" y="285" width="130" height="95" rx="16" class="demand"/>
+  <text x="720" y="324" class="title">同步</text>
+  <text x="720" y="352" class="sub">依赖与等待</text>
+  <rect x="805" y="285" width="130" height="95" rx="16" class="demand"/>
+  <text x="870" y="324" class="title">状态</text>
+  <text x="870" y="352" class="sub">保留与恢复</text>
+
+  <rect x="655" y="405" width="280" height="80" rx="16" class="demand"/>
+  <text x="795" y="440" class="title">时间与可靠性约束</text>
+  <text x="795" y="468" class="sub">持续多久 · 失败后损失什么</text>
+</svg>

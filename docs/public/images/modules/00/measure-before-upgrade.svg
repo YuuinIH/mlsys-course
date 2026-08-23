@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-labelledby="title desc">
+  <title id="title">先测量，再决定是否升级</title>
+  <desc id="desc">工程师用放大镜观察显示器上的时间分解图。右侧购物车中的新 GPU 被暂时挡在停止标志后，表示先寻找证据再采购。</desc>
+  <defs>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; fill: #182230; }
+      .line { fill: none; stroke: #536170; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+      .thin { fill: none; stroke: #7b8796; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+      .surface { fill: #f5f7fa; stroke: #9aa6b5; stroke-width: 3; }
+      .screen { fill: #1d3154; stroke: #7ca6ef; stroke-width: 3; }
+      .accent { fill: #fff4df; stroke: #d38a18; stroke-width: 3; }
+      .good { fill: #eef8f2; stroke: #4a8c67; stroke-width: 3; }
+      .label { font-size: 24px; font-weight: 600; text-anchor: middle; }
+      .small { font-size: 16px; fill: #5e6b7a; text-anchor: middle; }
+      @media (prefers-color-scheme: dark) {
+        text { fill: #e9eef5; }.line { stroke: #aab6c5; }.thin { stroke: #91a0b2; }
+        .surface { fill: #252f3d; stroke: #718095; }.screen { fill: #172744; stroke: #7ca6ef; }
+        .accent { fill: #4b3718; stroke: #e3a84c; }.good { fill: #18372a; stroke: #72b48e; }.small { fill: #bac4d1; }
+      }
+    </style>
+  </defs>
+
+  <path d="M55 360 H905" class="thin"/>
+  <rect x="245" y="70" width="370" height="230" rx="16" class="screen"/>
+  <path d="M295 250 V190 H355 V222 H415 V145 H475 V205 H535 V105 H575" class="line" stroke="#7ca6ef"/>
+  <text x="430" y="332" class="label">时间到底花在哪里？</text>
+  <text x="430" y="356" class="small">queue · data · compute · communication</text>
+
+  <circle cx="180" cy="210" r="34" class="surface"/>
+  <path d="M180 244 V320 M180 265 L235 238 M180 270 L135 305 M180 320 L150 360 M180 320 L210 360" class="line"/>
+  <circle cx="266" cy="219" r="48" class="good" fill-opacity="0.45"/>
+  <path d="M301 254 L343 296" class="line"/>
+
+  <path d="M700 280 H835 L815 338 H725 Z M716 280 L700 238 H675" class="line"/>
+  <circle cx="742" cy="352" r="12" class="surface"/><circle cx="802" cy="352" r="12" class="surface"/>
+  <rect x="715" y="195" width="105" height="70" rx="10" class="accent"/>
+  <text x="767.5" y="238" class="label">GPU</text>
+  <circle cx="850" cy="190" r="48" class="accent"/>
+  <path d="M820 160 L880 220 M880 160 L820 220" class="line"/>
+  <text x="768" y="392" class="small">采购可以等，证据不能省</text>
+</svg>

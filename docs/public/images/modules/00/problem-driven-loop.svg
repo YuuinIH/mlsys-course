@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="430" viewBox="0 0 980 430" role="img" aria-labelledby="title desc">
+  <title id="title">问题驱动的系统分析闭环</title>
+  <desc id="desc">从问题开始，依次观察、测量、建立思维模型、理解机制、设计实验、比较取舍并作出决策。决策改变系统后，再次回到观察和测量。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" class="arrow-head"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; fill: #182230; }
+      .node { fill: #ffffff; stroke: #aeb8c6; stroke-width: 2; }
+      .measure { fill: #edf4ff; stroke: #4d77c7; stroke-width: 2.5; }
+      .decision { fill: #fff4df; stroke: #d38a18; stroke-width: 2.5; }
+      .label { font-size: 18px; font-weight: 600; text-anchor: middle; }
+      .sub { font-size: 13px; fill: #5e6b7a; text-anchor: middle; }
+      .flow { fill: none; stroke: #687789; stroke-width: 3; marker-end: url(#arrow); }
+      .loop { fill: none; stroke: #d38a18; stroke-width: 3; stroke-dasharray: 9 7; marker-end: url(#arrow); }
+      .arrow-head { fill: #687789; }
+      @media (prefers-color-scheme: dark) {
+        text { fill: #e9eef5; }
+        .node { fill: #202936; stroke: #667386; }
+        .measure { fill: #1d3154; stroke: #7ca6ef; }
+        .decision { fill: #4b3718; stroke: #e3a84c; }
+        .sub { fill: #bac4d1; }
+        .flow { stroke: #9aa9bb; }
+        .loop { stroke: #e3a84c; }
+        .arrow-head { fill: #9aa9bb; }
+      }
+    </style>
+  </defs>
+
+  <rect x="35" y="60" width="165" height="90" rx="18" class="node"/>
+  <text x="117.5" y="98" class="label">Problem</text>
+  <text x="117.5" y="125" class="sub">先定义真正的问题</text>
+  <rect x="280" y="60" width="165" height="90" rx="18" class="node"/>
+  <text x="362.5" y="98" class="label">Observe</text>
+  <text x="362.5" y="125" class="sub">看见系统在做什么</text>
+  <rect x="525" y="60" width="165" height="90" rx="18" class="measure"/>
+  <text x="607.5" y="98" class="label">Measure</text>
+  <text x="607.5" y="125" class="sub">建立可比较的证据</text>
+  <rect x="770" y="60" width="165" height="90" rx="18" class="node"/>
+  <text x="852.5" y="98" class="label">Mental Model</text>
+  <text x="852.5" y="125" class="sub">形成可检验的解释</text>
+
+  <path d="M200 105 H280" class="flow"/>
+  <path d="M445 105 H525" class="flow"/>
+  <path d="M690 105 H770" class="flow"/>
+  <path d="M852.5 150 V215" class="flow"/>
+
+  <rect x="770" y="240" width="165" height="90" rx="18" class="node"/>
+  <text x="852.5" y="278" class="label">Mechanism</text>
+  <text x="852.5" y="305" class="sub">理解因果机制</text>
+  <rect x="525" y="240" width="165" height="90" rx="18" class="node"/>
+  <text x="607.5" y="278" class="label">Experiment</text>
+  <text x="607.5" y="305" class="sub">用最小实验验证</text>
+  <rect x="280" y="240" width="165" height="90" rx="18" class="node"/>
+  <text x="362.5" y="278" class="label">Trade-off</text>
+  <text x="362.5" y="305" class="sub">比较获得与牺牲</text>
+  <rect x="35" y="240" width="165" height="90" rx="18" class="decision"/>
+  <text x="117.5" y="278" class="label">Decision</text>
+  <text x="117.5" y="305" class="sub">作出并记录选择</text>
+
+  <path d="M770 285 H690" class="flow"/>
+  <path d="M525 285 H445" class="flow"/>
+  <path d="M280 285 H200" class="flow"/>
+  <path d="M117.5 330 V380 H607.5 V150" class="loop"/>
+  <text x="365" y="405" class="sub">Measure again：决策改变了系统，新的证据会开启下一轮</text>
+</svg>

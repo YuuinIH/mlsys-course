@@ -27,7 +27,7 @@ export default defineConfig({
         text: 'Part 0 · Systems Thinking',
         collapsed: false,
         items: [
-          { text: '0. GPU 利用率只有 30%', link: '/modules/00-systems-thinking' },
+          { text: '0. 为啥需要MLSYS?', link: '/modules/00-systems-thinking' },
           { text: '1. Benchmark 可信吗', link: '/modules/01-measurement' }
         ]
       },
