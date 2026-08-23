@@ -35,7 +35,7 @@
 
 ## 章节结构
 
-遵循[章节模板](chapter-template.md)：
+除课程序章外，遵循[章节模板](chapter-template.md)：
 
 1. Incident / Problem
 2. Workload Characterization

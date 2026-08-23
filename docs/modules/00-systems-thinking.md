@@ -1,5 +1,7 @@
 # 0. 为啥需要 MLSys？
 
+> 状态：初稿。Part 0 · Systems Thinking for ML。本章是课程序章，使用连续故事建立共同问题与调查方法，不套用后续章节的完整实验模板。
+
 假设你是一个刚入职不久的工程师。
 
 某天，老板在会议上刷到了某个最新最炫的 DeepSeek 模型。
@@ -139,7 +141,7 @@ print(answer)
 
 毕竟，你总不能让部门里的每一个人都搬着椅子坐到你的工位旁边，在你的终端里输入 prompt。
 
-于是你写了一段依赖 FastAPI的小服务：
+于是你写了一段依赖 FastAPI 的小服务：
 
 ```python
 from fastapi import FastAPI
@@ -190,18 +192,20 @@ def chat(request: ChatRequest):
     return {"answer": answer}
 ```
 
-然后：
+然后先在本机验证它：
+
+> **Cookbook · 本地演示**：下面的服务只监听回环地址，避免把一个没有认证和访问控制的接口直接暴露到局域网或公网。
 
 ```bash
 pip install fastapi uvicorn transformers torch
 
-uvicorn app:app --host 0.0.0.0 --port 8000
+uvicorn app:app --host 127.0.0.1 --port 8000
 ```
 
-只要能够访问你的电脑，同事现在就可以：
+你可以先在同一台电脑上请求它：
 
 ```bash
-curl -X POST http://你的IP:8000/chat \
+curl -X POST http://127.0.0.1:8000/chat \
   -H "Content-Type: application/json" \
   -d '{"prompt":"请帮我写一段年度工作总结"}'
 ```
@@ -213,6 +217,8 @@ curl -X POST http://你的IP:8000/chat \
   "answer": "过去一年，在部门领导的正确指导下……"
 }
 ```
+
+如果要让部门里的同事访问，还需要明确网络边界，并补上认证、限流、日志和输入约束。为了继续观察最核心的系统问题，下面暂时假设这些入口层能力已经存在。
 
 好了。
 
@@ -282,7 +288,7 @@ CPU 也没闲着。
 | 第二个请求 | **顿悟。**<br><img src="/images/modules/00/galaxy-brain-m-stage-2.jpg" alt="Galaxy Brain 第二阶段：开始发光" width="320" loading="lazy"> |
 | 第三个请求 | **升维。**<br><img src="/images/modules/00/galaxy-brain-m-stage-3.jpg" alt="Galaxy Brain 第三阶段：光芒四射" width="320" loading="lazy"> |
 | 第四个请求 | **超越。**<br><img src="/images/modules/00/galaxy-brain-m-stage-4.jpg" alt="Galaxy Brain 第四阶段：进入宇宙" width="320" loading="lazy"> |
-| 排在最后的请求 | **然后——妈妈生的。**<br><img src="/images/modules/00/galaxy-brain-m-stage-5.jpg" alt="Galaxy Brain 第五阶段：宇宙级顿悟" width="320" loading="lazy"> |
+| 排在最后的请求 | **彻底过载。**<br><img src="/images/modules/00/galaxy-brain-m-stage-5.jpg" alt="Galaxy Brain 第五阶段：宇宙级顿悟" width="320" loading="lazy"> |
 
 第一个人的请求可能很快就开始返回。
 
@@ -410,199 +416,47 @@ answer
 
 你开始运营一个**系统**。
 
-## 0.4 “那直接用 vLLM 不就行了？”
+## 0.4 “那直接用成熟的推理系统不就行了？”
 
-看到这里，有一点 LLM Infra 经验的读者大概已经忍不住了：
+当然可以。
 
-> 不是兄弟，你为什么还在 `transformers.generate()`？
+现实工作里，如果需求合适，应该优先评估成熟系统，而不是从零实现一个 inference engine。以 vLLM 为代表的系统，已经在 batching、KV Cache 管理和请求调度等方面积累了大量工程能力。
 
-> `vllm serve` 不比你那手搓的服务好吗？
+但“换上成熟系统以后更快了”和“理解它为什么更快”是两件不同的事。
 
-ok，当然行。
+我们仍然需要问：
 
-实际上，你刚才撞上的很多问题，今天早就已经有成熟的 inference engine 在专门解决，而且集众人之力解决的很好。
+- 时间减少在了哪个阶段？
+- 吞吐提升来自更高效的执行，还是更好的 batching？
+- 为什么 KV Cache 会成为需要调度的有限资源？
+- 为什么长 prompt 会影响其他请求？
+- 为什么吞吐提高以后，交互延迟可能反而恶化？
 
-以 vLLM 为例，它现在支持 continuous batching、PagedAttention/KV Cache 管理、prefix caching、chunked prefill、speculative decoding，以及多种并行和分布式推理方式。
-
-现实工作里，如果需求合适：
-
-**你当然应该先用成熟系统。**
-
-而不是入职第三天，当着办公室里所有的人郑重宣布：
-
-> 我决定从零重新实现一个 LLM inference engine。
-
-这大概不是一种特别值得鼓励的职业规划。
-
-但作为学习者，我们还有另一个问题。
-
-假设现在输入：
-
-```bash
-vllm serve Qwen/Qwen3-4B
-```
-
-发现：
-
-> 哇，好快。
-
-然后呢？
-
-为什么它更快？
-
-是 kernel 快了？
-
-还是 batching 更好了？
-
-为什么需要 KV Cache？
-
-为什么 KV Cache 竟然会成为一个需要专门管理的系统资源？
-
-为什么很长的 prompt 会干扰正在生成的请求？
-
-为什么 throughput 上升以后，latency 可能反而恶化？
-
-为什么明明显存还有剩余，却不一定还能塞进新请求？
-
-如果这些问题都不知道，那么我们只是把：
-
-```text
-transformers
-```
-
-换成了：
-
-```text
-vLLM
-```
-
-系统暂时变好了。
-
-理解没有增加多少。
-
-## 0.5 我们当然也会拆 vLLM
-
-这里可能需要提前声明一件稍微尴尬的事情。
-
-你现在去小红书或者X上的 AI Infra 社区转一圈，很容易看到：
-
-> 《vLLM 高频面试题》
-
-> 《一文搞懂 PagedAttention》
-
-> 《手撕 vLLM Scheduler》
-
-> 《从源码看 XXX》
-
-看多了以后，很容易产生一个错觉：
-
-> 只要把一个流行框架的模块图和类名背下来，就理解了它背后的系统。
-
-很遗憾，并没有。
-
-而更尴尬的是：
-
-**本课程后面也会他妈的拆 vLLM。**
-
-而且可能真的拆不止一章。
-
-区别并不在于“拆不拆”。
-
-区别在于顺序。
-
-我们更希望这样：
+因此，课程不会从框架模块图和类名开始。更合适的学习顺序是：
 
 ```text
 真实问题
-   ↓
-观察
-   ↓
-测量
-   ↓
-建立 mental model
-   ↓
-做一个最朴素的实现
-   ↓
-撞上新的问题
-   ↓
-新的机制被逼出来
-   ↓
-再去看成熟系统为什么这么设计
+  ↓
+观察与测量
+  ↓
+最朴素的实现
+  ↓
+问题逼出 batching、状态管理与调度
+  ↓
+轻量教学实现
+  ↓
+成熟生产系统
 ```
 
-而不是：
+轻量教学实现可以帮助我们观察生产系统的关键骨架；vLLM 一类成熟系统则可以作为真实工程的观察载体。它们都不是课程目标本身。后续进入 LLM serving 时，我们再沿着具体的 workload 和测量结果讨论这些机制。
 
-```text
-vLLM 架构图
-   ↓
-Scheduler
-   ↓
-Block Manager
-   ↓
-Model Runner
-   ↓
-PagedAttention
-   ↓
-背完
-```
-
-我们真正想问的不是：
-
-> **vLLM 有哪些模块？**
-
-而是：
-
-> **什么问题，逼着一个推理系统最后长出了这些模块？**
-
-这也是 nano-vLLM 一类项目很适合作为教学桥梁的原因。
-
-例如 nano-vLLM 一类轻量实现，会尝试保留 scheduler、KV Cache 管理、prefix caching、tensor parallelism、CUDA Graph 等关键机制，同时尽量压缩 production system 中庞大的工程复杂度。
-
-它不是生产环境里 vLLM 的替代品。
-
-恰恰相反。
-
-它的价值之一就在于：
-
-> **把生产系统里最值得观察的骨架，从大量工程复杂度里暂时剥出来。**
-
-这和本课程后面会反复采用的一种方法很接近：
+这就是本课程所说的：
 
 > **Toy-scale, production-shaped.**
 
-系统可以很小。
+系统和模型可以很小，但复现的问题应当和真实系统具有相同的形状。
 
-模型可以很小。
-
-实验可以只在一张消费级 GPU 上运行。
-
-但我们希望复现的问题，和真实生产环境中的问题具有相同的形状。
-
-所以以后我们可能真的会：
-
-```text
-model.generate()
-      ↓
-自己写一个傻乎乎的 batch
-      ↓
-自己维护 waiting / running queue
-      ↓
-发现 KV Cache 是资源
-      ↓
-做一个最小 scheduler
-      ↓
-看 nano-vLLM
-      ↓
-最后再看 vLLM
-```
-
-到了最后一步，源码应该不再只是一堆类名。
-
-而应该让你产生一种感觉：
-
-> 原来我们前面撞上的那个问题，在这里。
-
-## 0.6 等一下，我们甚至还没有训练模型
+## 0.5 等一下，我们甚至还没有训练模型
 
 到目前为止，我们已经折腾了这么久。
 
@@ -787,7 +641,7 @@ GPU Utilization: 17%
 
 最后变成了一整套计算、内存、通信、I/O 和可靠性问题。
 
-## 0.7 不过，这不是一门“怎么把模型训得更好”的课
+## 0.6 不过，这不是一门“怎么把模型训得更好”的课
 
 走到这里，也应该说清楚这门课的边界。
 
@@ -905,7 +759,7 @@ rollout
 
 只是观察的是同一个过程的不同层次。
 
-## 0.8 现在，我们继续把数字往上加
+## 0.7 现在，我们继续把数字往上加
 
 到这里，我们其实已经有了两条故事线。
 
@@ -1033,9 +887,9 @@ ML Systems 也是一样。
 model.generate(...)
 ```
 
-为什么我们现在居然开始讨论”水电还是核电“了？
+为什么我们现在居然开始讨论“水电还是核电”了？
 
-## 0.9 从 Python 脚本，到物理基础设施
+## 0.8 从 Python 脚本，到物理基础设施
 
 这并不是纯粹为了制造戏剧效果。
 
@@ -1129,13 +983,9 @@ Stargate 的官方叙事从来不只是技术项目。
 
 它同时讨论美国的 AI 领导地位、就业、再工业化、供应链和国家安全。换句话说，当 AI 基础设施达到这个规模以后，它已经不再只是某家公司的 IT 预算，而开始被当作类似能源、通信和制造业基础设施的战略能力。<sup>[[4]](#ref-stargate-announcement)</sup>
 
-说得不那么客气一点：
+近年的模型与系统工作对这套叙事提出了一个重要修正。
 
-> **Stargate 这套叙事，都快让国模给干碎了。**
-
-但这里被“干碎”的，并不是数据中心本身。
-
-被击穿的是一种过于简单的线性想象：
+需要修正的并不是数据中心本身，而是一种过于简单的线性想象：
 
 ```text
 更多的钱
@@ -1227,7 +1077,7 @@ DeepSeek 在问：
 
 > **现代机器学习的能力，已经越来越难脱离整个计算系统单独讨论。**
 
-## 0.10 所以，为什么需要 MLSys？
+## 0.9 所以，为什么需要 MLSys？
 
 现在终于可以回到这一章的标题。
 
@@ -1267,7 +1117,7 @@ DeepSeek 在问：
 
 恰恰相反。
 
-机器学习带来了一种庞大、昂贵、复杂而且极其挑剔的 workload，在这之前，从来没有一个问题能把让他们重新挤到了一张桌子上。
+机器学习带来了一种庞大、昂贵、复杂而且极其挑剔的 workload。此前很少有一种计算需求，会让这些领域如此紧密地重新聚到一起。
 
 因此，这门课真正想训练的并不是：
 
@@ -1283,9 +1133,9 @@ DeepSeek 在问：
 
 会碰 GPU。
 
-会碰 CUDA，ROCm。
+会碰 CUDA、ROCm。
 
-会碰 PYTorch。
+会碰 PyTorch。
 
 会写 distributed training。
 
@@ -1337,7 +1187,7 @@ DeepSeek 在问：
 
 那我们大概做对了一点什么。
 
-## 0.11 所以，先别急着优化
+## 0.10 所以，先别急着优化
 
 现在回到办公室。
 
@@ -1403,7 +1253,7 @@ RTX 5070
 
 ## 图像与文献参考
 
-1. <span id="ref-galaxy-brain"></span>Jon Manning，*High Resolution CC-0 Licensed Galaxy Brain Images*，Secret Lab Institute，2021。[原始模板与素材说明](https://secretlabinstitute.wordpress.com/2021/02/15/cc-0-licensed-galaxy-brain-images/)。本章使用其男性角色五阶段版本，并将图片缩放、转换为 JPEG；该页面将组合图以 CC0 发布，同时列出了组成素材所需的署名信息。
+1. <span id="ref-galaxy-brain"></span>Jon Manning，*High Resolution CC-0 Licensed Galaxy Brain Images*，Secret Lab Institute，2021。[原始模板与素材说明](https://secretlabinstitute.wordpress.com/2021/02/15/cc-0-licensed-galaxy-brain-images/)。本章使用其男性角色五阶段版本，并将图片缩放、转换为 JPEG。组合图以 CC0 发布；其中的 CC BY 素材包括 mahesh 的 [*Brain*](https://www.blendswap.com/blend/13180) 与 ESA/Hubble 的 [*Stellar nursery in the arms of NGC 1672*](https://esahubble.org/images/heic0706a/)，在此按原页面要求署名。
 2. <span id="ref-xkcd-laser"></span>Randall Munroe，*Laser Pointer*，xkcd *What If?* #13。[原文](https://what-if.xkcd.com/13/)；[xkcd 许可说明](https://xkcd.com/license.html)。本章节选其中的 `laser_pointer_5mw.png` 与 `laser_pointer_terawatt.png`，未修改画面，依 CC BY-NC 2.5 用于非商业课程。
 3. <span id="ref-course-diagrams"></span>本章使用的结构图与叙事插图均为本课程原创 SVG，包括服务请求拓扑、workload 转译、问题驱动闭环、Stargate 基础设施栈、规模与效率对照，以及办公室、规模放大和测量场景插图。
 4. <span id="ref-stargate-announcement"></span>OpenAI、SoftBank，*Announcing The Stargate Project*，2025-01-21。[官方公告](https://openai.com/index/announcing-the-stargate-project/)。
