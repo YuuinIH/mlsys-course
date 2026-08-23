@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="570" viewBox="0 0 960 570" role="img" aria-labelledby="title desc">
+  <title id="title">同一种模型结构，两种系统 workload</title>
+  <desc id="desc">同一种模型结构向左进入推理循环，执行 generate，面对请求到达、排队、KV Cache、延迟与吞吐；向右进入训练循环，执行 backward 和 optimizer step，面对数据供给、激活、梯度、优化器状态、同步与 checkpoint。底部说明两者对计算、内存、通信和状态提出不同压力。</desc>
+  <defs>
+    <marker id="blue-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" class="blue-head"/>
+    </marker>
+    <marker id="orange-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" class="orange-head"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; fill: #182230; }
+      .model { fill: #f5efff; stroke: #8061b3; stroke-width: 3; }
+      .inference { fill: #edf4ff; stroke: #4d77c7; stroke-width: 2.5; }
+      .training { fill: #fff4df; stroke: #d38a18; stroke-width: 2.5; }
+      .neutral { fill: #ffffff; stroke: #aeb8c6; stroke-width: 2.5; }
+      .state { fill: #f5f7fa; stroke: #9aa6b5; stroke-width: 2; }
+      .shared { fill: #eef8f2; stroke: #4a8c67; stroke-width: 2.5; }
+      .blue-flow { fill: none; stroke: #4d77c7; stroke-width: 4; marker-end: url(#blue-arrow); }
+      .orange-flow { fill: none; stroke: #d38a18; stroke-width: 4; marker-end: url(#orange-arrow); }
+      .blue-link { fill: none; stroke: #4d77c7; stroke-width: 4; }
+      .orange-link { fill: none; stroke: #d38a18; stroke-width: 4; }
+      .blue-head { fill: #4d77c7; }
+      .orange-head { fill: #d38a18; }
+      .title { font-size: 22px; font-weight: 700; text-anchor: middle; }
+      .heading { font-size: 19px; font-weight: 700; text-anchor: middle; }
+      .label { font-size: 16px; font-weight: 600; text-anchor: middle; }
+      .sub { font-size: 14px; fill: #5e6b7a; text-anchor: middle; }
+      .code { font-size: 16px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; text-anchor: middle; }
+      .blue-code { fill: #315da8; }
+      .orange-code { fill: #9a6110; }
+      @media (prefers-color-scheme: dark) {
+        text { fill: #e9eef5; }
+        .model { fill: #34264b; stroke: #ad8bdd; }
+        .inference { fill: #1d3154; stroke: #7ca6ef; }
+        .training { fill: #4b3718; stroke: #e3a84c; }
+        .neutral { fill: #202936; stroke: #667386; }
+        .state { fill: #252f3d; stroke: #718095; }
+        .shared { fill: #18372a; stroke: #72b48e; }
+        .blue-flow { stroke: #7ca6ef; }
+        .orange-flow { stroke: #e3a84c; }
+        .blue-link { stroke: #7ca6ef; }
+        .orange-link { stroke: #e3a84c; }
+        .blue-head { fill: #7ca6ef; }
+        .orange-head { fill: #e3a84c; }
+        .sub { fill: #bac4d1; }
+        .blue-code { fill: #a9c7ff; }
+        .orange-code { fill: #ffd18a; }
+      }
+    </style>
+  </defs>
+
+  <text x="480" y="34" class="title">同一种模型结构，进入不同循环后发生了什么？</text>
+
+  <rect x="350" y="58" width="260" height="78" rx="39" class="model"/>
+  <text x="480" y="91" class="heading">Model</text>
+  <text x="480" y="116" class="sub">相同模型结构，不同执行过程</text>
+
+  <path d="M420 136 C420 174 275 164 275 207" class="blue-flow"/>
+  <path d="M540 136 C540 174 685 164 685 207" class="orange-flow"/>
+
+  <rect x="45" y="210" width="405" height="268" rx="24" class="inference"/>
+  <text x="247.5" y="244" class="heading">推理 · Inference</text>
+  <text x="247.5" y="272" class="code blue-code">model.generate(...)</text>
+
+  <rect x="70" y="296" width="165" height="68" rx="14" class="neutral"/>
+  <text x="152.5" y="324" class="label">输入 workload</text>
+  <text x="152.5" y="348" class="sub">请求到达 · 长短不一</text>
+  <rect x="260" y="296" width="165" height="68" rx="14" class="state"/>
+  <text x="342.5" y="324" class="label">运行状态</text>
+  <text x="342.5" y="348" class="sub">队列 · KV Cache</text>
+
+  <rect x="70" y="386" width="165" height="68" rx="14" class="state"/>
+  <text x="152.5" y="414" class="label">执行形状</text>
+  <text x="152.5" y="433" class="sub">prefill</text>
+  <text x="152.5" y="450" class="sub">逐 token decode</text>
+  <rect x="260" y="386" width="165" height="68" rx="14" class="neutral"/>
+  <text x="342.5" y="414" class="label">主要目标</text>
+  <text x="342.5" y="438" class="sub">TTFT · ITL · 吞吐</text>
+
+  <rect x="510" y="210" width="405" height="268" rx="24" class="training"/>
+  <text x="712.5" y="244" class="heading">训练 · Training</text>
+  <text x="712.5" y="272" class="code orange-code">loss.backward() · optimizer.step()</text>
+
+  <rect x="535" y="296" width="165" height="68" rx="14" class="neutral"/>
+  <text x="617.5" y="324" class="label">输入 workload</text>
+  <text x="617.5" y="348" class="sub">数据批次 · 重复迭代</text>
+  <rect x="725" y="296" width="165" height="68" rx="14" class="state"/>
+  <text x="807.5" y="324" class="label">训练状态</text>
+  <text x="807.5" y="348" class="sub">激活 · 梯度 · 优化器</text>
+
+  <rect x="535" y="386" width="165" height="68" rx="14" class="state"/>
+  <text x="617.5" y="414" class="label">系统协作</text>
+  <text x="617.5" y="438" class="sub">同步 · checkpoint</text>
+  <rect x="725" y="386" width="165" height="68" rx="14" class="neutral"/>
+  <text x="807.5" y="414" class="label">主要目标</text>
+  <text x="807.5" y="433" class="sub">step time</text>
+  <text x="807.5" y="450" class="sub">time-to-train</text>
+
+  <path d="M247.5 478 V490 H360 V500" class="blue-link"/>
+  <path d="M712.5 478 V490 H600 V500" class="orange-link"/>
+  <rect x="250" y="500" width="460" height="54" rx="27" class="shared"/>
+  <text x="480" y="523" class="label">计算 · 内存 · 通信 · I/O · 状态生命周期</text>
+  <text x="480" y="544" class="sub">共同使用机器，但施加不同的资源压力与成功标准</text>
+</svg>

@@ -1,51 +1,93 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-labelledby="title desc">
-  <title id="title">先在你电脑上试试</title>
-  <desc id="desc">领导站在办公桌旁提出先在电脑上部署大模型。工程师坐在显示器前，转头看向桌下的主机。</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="500" viewBox="0 0 960 500" role="img" aria-labelledby="title desc">
+  <title id="title">从一句需求到部门试用</title>
+  <desc id="desc">三格故事图。第一格，领导提出先在办公电脑上试试大模型；第二格，工程师在本机成功运行模型；第三格，领导要求第二天开放给部门同事试用，单人演示即将变成多人服务。</desc>
   <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" class="arrow-head"/>
+    </marker>
     <style>
       text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; fill: #182230; }
-      .line { fill: none; stroke: #536170; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
-      .thin { fill: none; stroke: #7b8796; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-      .surface { fill: #f5f7fa; stroke: #9aa6b5; stroke-width: 3; }
-      .screen { fill: #1d3154; stroke: #7ca6ef; stroke-width: 3; }
-      .accent { fill: #fff4df; stroke: #d38a18; stroke-width: 3; }
-      .bubble { fill: #ffffff; stroke: #7b8796; stroke-width: 3; }
-      .label { font-size: 25px; font-weight: 600; text-anchor: middle; }
-      .code { font-size: 18px; fill: #dbeafe; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .panel { fill: #ffffff; stroke: #aeb8c6; stroke-width: 2.5; }
+      .panel-number { fill: #edf4ff; stroke: #4d77c7; stroke-width: 2.5; }
+      .surface { fill: #f5f7fa; stroke: #9aa6b5; stroke-width: 2.5; }
+      .screen { fill: #1d3154; stroke: #7ca6ef; stroke-width: 2.5; }
+      .warm { fill: #fff4df; stroke: #d38a18; stroke-width: 2.5; }
+      .success { fill: #eef8f2; stroke: #4a8c67; stroke-width: 2.5; }
+      .bubble { fill: #ffffff; stroke: #7b8796; stroke-width: 2.5; }
+      .line { fill: none; stroke: #5e6b7a; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+      .thin { fill: none; stroke: #7b8796; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+      .flow { fill: none; stroke: #4d77c7; stroke-width: 4; marker-end: url(#arrow); }
+      .arrow-head { fill: #4d77c7; }
+      .heading { font-size: 19px; font-weight: 700; text-anchor: middle; }
+      .label { font-size: 16px; font-weight: 600; text-anchor: middle; }
+      .speech { font-size: 15px; font-weight: 600; text-anchor: middle; }
+      .sub { font-size: 14px; fill: #5e6b7a; text-anchor: middle; }
+      .code { font-size: 15px; fill: #dbeafe; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .check { fill: none; stroke: #4a8c67; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
       @media (prefers-color-scheme: dark) {
         text { fill: #e9eef5; }
-        .line { stroke: #aab6c5; }
-        .thin { stroke: #91a0b2; }
+        .panel, .bubble { fill: #202936; stroke: #667386; }
+        .panel-number { fill: #1d3154; stroke: #7ca6ef; }
         .surface { fill: #252f3d; stroke: #718095; }
         .screen { fill: #172744; stroke: #7ca6ef; }
-        .accent { fill: #4b3718; stroke: #e3a84c; }
-        .bubble { fill: #202936; stroke: #718095; }
+        .warm { fill: #4b3718; stroke: #e3a84c; }
+        .success { fill: #18372a; stroke: #72b48e; }
+        .line { stroke: #aab6c5; }
+        .thin { stroke: #91a0b2; }
+        .flow { stroke: #7ca6ef; }
+        .arrow-head { fill: #7ca6ef; }
+        .sub { fill: #bac4d1; }
+        .check { stroke: #72b48e; }
       }
     </style>
   </defs>
 
-  <path d="M60 350 H900" class="thin"/>
-  <rect x="430" y="220" width="430" height="28" rx="8" class="surface"/>
-  <path d="M470 248 V350 M820 248 V350" class="line"/>
-  <rect x="610" y="85" width="205" height="125" rx="12" class="screen"/>
-  <text x="632" y="128" class="code">model.generate(</text>
-  <text x="655" y="160" class="code">prompt</text>
-  <text x="632" y="192" class="code">)</text>
-  <path d="M712 210 V220 M680 220 H744" class="line"/>
-  <rect x="720" y="265" width="105" height="85" rx="10" class="surface"/>
-  <rect x="738" y="282" width="69" height="23" rx="6" class="accent"/>
-  <circle cx="772" cy="328" r="8" class="screen"/>
+  <text x="480" y="34" class="heading">一个本地模型，怎样开始变成一个系统？</text>
 
-  <circle cx="520" cy="185" r="30" class="surface"/>
-  <path d="M520 215 V292 M520 235 L570 260 M520 246 L480 278 M520 292 L492 342 M520 292 L551 342" class="line"/>
-  <path d="M491 170 Q520 135 548 170" class="thin"/>
-  <path d="M570 260 Q620 285 720 305" class="thin" stroke-dasharray="7 8"/>
+  <rect x="25" y="58" width="275" height="385" rx="22" class="panel"/>
+  <circle cx="58" cy="91" r="18" class="panel-number"/>
+  <text x="58" y="97" class="label">1</text>
+  <text x="162.5" y="97" class="heading">一句需求</text>
+  <path d="M55 125 H270 Q282 125 282 137 V202 Q282 214 270 214 H194 L178 231 L181 214 H55 Q43 214 43 202 V137 Q43 125 55 125 Z" class="bubble"/>
+  <text x="162" y="159" class="speech">不用搞那么复杂，</text>
+  <text x="162" y="184" class="speech">先在你电脑上试试。</text>
+  <circle cx="92" cy="283" r="22" class="surface"/>
+  <path d="M92 305 V362 M92 326 L64 348 M92 326 L124 341 M92 362 L72 399 M92 362 L114 399" class="line"/>
+  <circle cx="224" cy="294" r="22" class="surface"/>
+  <path d="M224 316 V372 M224 336 L198 354 M224 336 L252 348 M224 372 L207 403 M224 372 L243 403" class="line"/>
+  <path d="M60 414 H265" class="thin"/>
+  <text x="162.5" y="431" class="sub">会议室里的任务</text>
 
-  <circle cx="225" cy="205" r="34" class="surface"/>
-  <path d="M225 239 V330 M225 260 L175 292 M225 262 L300 255 M225 330 L195 350 M225 330 L260 350" class="line"/>
-  <path d="M193 192 Q225 150 257 192" class="thin"/>
+  <path d="M306 250 H330" class="flow"/>
 
-  <path d="M92 48 H430 Q450 48 450 68 V136 Q450 156 430 156 H292 L258 190 L266 156 H92 Q72 156 72 136 V68 Q72 48 92 48 Z" class="bubble"/>
-  <text x="260" y="91" class="label">不用搞那么复杂，</text>
-  <text x="260" y="126" class="label">先在你电脑上搞一个出来看看。</text>
+  <rect x="342" y="58" width="275" height="385" rx="22" class="panel"/>
+  <circle cx="375" cy="91" r="18" class="panel-number"/>
+  <text x="375" y="97" class="label">2</text>
+  <text x="479.5" y="97" class="heading">一次演示</text>
+  <rect x="375" y="130" width="209" height="145" rx="13" class="screen"/>
+  <circle cx="393" cy="149" r="4" class="warm"/><circle cx="408" cy="149" r="4" class="warm"/><circle cx="423" cy="149" r="4" class="warm"/>
+  <text x="399" y="185" class="code">model.generate(</text>
+  <text x="422" y="211" class="code">prompt</text>
+  <text x="399" y="237" class="code">)</text>
+  <path d="M478 275 V295 M435 295 H521" class="line"/>
+  <rect x="399" y="315" width="161" height="72" rx="16" class="success"/>
+  <path d="M427 350 L443 365 L470 335" class="check"/>
+  <text x="511" y="357" class="label">能跑了</text>
+  <text x="479.5" y="431" class="sub">办公电脑上的模型</text>
+
+  <path d="M623 250 H647" class="flow"/>
+
+  <rect x="659" y="58" width="276" height="385" rx="22" class="panel"/>
+  <circle cx="692" cy="91" r="18" class="panel-number"/>
+  <text x="692" y="97" class="label">3</text>
+  <text x="797" y="97" class="heading">马上推广</text>
+  <path d="M683 125 H911 Q923 125 923 137 V202 Q923 214 911 214 H833 L817 231 L820 214 H683 Q671 214 671 202 V137 Q671 125 683 125 Z" class="bubble"/>
+  <text x="797" y="159" class="speech">那你整理一下，</text>
+  <text x="797" y="184" class="speech">明天给部门里的人试试。</text>
+  <rect x="689" y="266" width="216" height="118" rx="18" class="warm"/>
+  <circle cx="727" cy="307" r="15" class="surface"/><circle cx="765" cy="307" r="15" class="surface"/><circle cx="803" cy="307" r="15" class="surface"/><circle cx="841" cy="307" r="15" class="surface"/>
+  <path d="M712 345 Q727 329 742 345 M750 345 Q765 329 780 345 M788 345 Q803 329 818 345 M826 345 Q841 329 856 345" class="thin"/>
+  <rect x="870" y="293" width="18" height="18" rx="4" class="screen"/>
+  <path d="M879 311 V335" class="thin"/>
+  <text x="797" y="431" class="sub">单人演示即将面对多人 workload</text>
 </svg>

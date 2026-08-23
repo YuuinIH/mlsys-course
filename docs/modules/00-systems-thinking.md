@@ -6,23 +6,13 @@
 
 某天，老板在会议上刷到了某个最新最炫的 DeepSeek 模型。
 
-他突然沉默了三分钟，然后抬头说：
+他突然沉默了三分钟，然后把一个听起来很大的任务，压缩成了一句听起来很小的话：
 
-“小王啊，最近这个 DeepSeek 很火。”  
-“嗯。”  
-“集团领导也很重视。”  
-“嗯……”  
-“你看我们是不是也应该有自己的大模型？”  
-“……”  
-“不用搞那么复杂，先在你电脑上搞一个出来看看。”
+> “不用搞那么复杂，先在你电脑上搞一个出来看看。”
 
 会议室里没人说话。
 
 同事们不约而同地看向一脸茫然的你。
-
-![领导提出先在办公电脑上部署大模型，工程师看向桌下主机的场景插图](/images/modules/00/office-ai-request.svg)
-
-<small>很多 ML system 的故事，并不是从一座数据中心开始的，而是从一句“先在你电脑上试试”开始的。<sup>[[3]](#ref-course-diagrams)</sup></small>
 
 你无奈地回到工位，看了一眼桌子下面那台电脑：
 
@@ -93,33 +83,13 @@ print(answer)
 
 然后，它真的开始往外吐字了。
 
-不一会儿，领导来了。
+不一会儿，领导来验收。一个原本只存在于会议里的想法，已经在桌下主机上完成了从需求到演示的第一次跳跃：
 
-“弄得怎么样了？”
+![从领导提出本地部署需求，到模型成功运行，再到要求部门试用的三格故事图](/images/modules/00/office-ai-request.svg)
 
-“能跑了。”
+<small>很多 ML system 的故事，并不是从一座数据中心开始的，而是从一句“先在你电脑上试试”开始的。<sup>[[3]](#ref-course-diagrams)</sup></small>
 
-你把问题改成：
-
-> 请写一段关于“人工智能赋能企业高质量发展”的介绍，200 字以内。
-
-模型稍微思考了一下：
-
-> 随着人工智能技术的快速发展，人工智能正在成为推动企业数字化转型和高质量发展的重要力量。通过引入人工智能技术，企业可以提高生产效率，优化业务流程，降低运营成本，并进一步提升管理水平和创新能力……
-
-领导看完：
-
-“哎，这不挺好吗？”
-
-“嗯，模型比较小，能力有限，就是先跑起来看看。”
-
-“这个是我们自己的吗？”
-
-你想了想。
-
-“模型是开源的，现在下载在本机运行，数据没有发出去。”
-
-领导显然只听进去了两个关键词：
+模型是开源的，运行在本机，数据没有发出去。领导显然只听进去了两个关键词：
 
 **开源。**
 
@@ -127,13 +97,9 @@ print(answer)
 
 然后满意了。
 
-“不错，至少说明这个路线能走。”
+你刚准备松一口气，下一句已经来了：
 
-你刚准备松一口气。
-
-“那你整理一下，明天给部门里的人也试试。”
-
-“……”
+> “那你整理一下，明天给部门里的人也试试。”
 
 ## 0.1 昨天你有一个模型，今天你有一个服务
 
@@ -509,17 +475,17 @@ model = load_model(...)
 model.generate(...)
 ```
 
-那么，如果有一天领导又走过来：
+但 ML 系统面对的不只有“怎么把模型服务出去”。同一种模型结构，分别进入推理循环和训练循环时，机器需要承担的工作会突然改变：
 
-“小王啊。”
+![同一种模型结构分别进入推理和训练循环后，形成请求排队与训练状态两种不同 workload 的分叉图](/images/modules/00/inference-to-training.svg)
 
-“嗯？”
+<small>代码看起来只是从生成切换到训练；系统看到的却是两套不同的执行目标、状态生命周期和资源压力。<sup>[[3]](#ref-course-diagrams)</sup></small>
 
-“既然这个路线都跑通了，我们自己的模型是不是也可以搞一下？”
+推理主要面对请求到达、排队、延迟、吞吐和不断增长的 KV Cache。训练还要保存激活、梯度和优化器状态，执行反向传播，并持续读取数据、同步梯度或分片状态，以及保存 checkpoint。
 
-你可能会突然开始怀念只有五个同事同时访问 FastAPI 的那个上午。
+看起来只是多了一个 `loss.backward()`。
 
-因为训练又会把一整套新的系统问题带到你面前。
+对计算机来说，却几乎换了一种 workload。
 
 最简单的训练循环，看起来可能只是：
 
@@ -1291,7 +1257,7 @@ RTX 5070
 
 1. <span id="ref-galaxy-brain"></span>Jon Manning，*High Resolution CC-0 Licensed Galaxy Brain Images*，Secret Lab Institute，2021。[原始模板与素材说明](https://secretlabinstitute.wordpress.com/2021/02/15/cc-0-licensed-galaxy-brain-images/)。本章使用其男性角色五阶段版本，并将图片缩放、转换为 JPEG。组合图以 CC0 发布；其中的 CC BY 素材包括 mahesh 的 [*Brain*](https://www.blendswap.com/blend/13180) 与 ESA/Hubble 的 [*Stellar nursery in the arms of NGC 1672*](https://esahubble.org/images/heic0706a/)，在此按原页面要求署名。
 2. <span id="ref-xkcd-laser"></span>Randall Munroe，*Laser Pointer*，xkcd *What If?* #13。[原文](https://what-if.xkcd.com/13/)；[xkcd 许可说明](https://xkcd.com/license.html)。本章节选其中的 `laser_pointer_5mw.png` 与 `laser_pointer_terawatt.png`，未修改画面，依 CC BY-NC 2.5 用于非商业课程。
-3. <span id="ref-course-diagrams"></span>本章使用的结构图与叙事插图均为本课程原创 SVG，包括服务请求拓扑、workload 转译、问题驱动闭环、Stargate 基础设施栈、规模与效率对照，以及办公室、规模放大和测量场景插图。
+3. <span id="ref-course-diagrams"></span>本章使用的结构图与叙事插图均为本课程原创 SVG，包括办公室三格故事、推理与训练 workload 分叉、服务请求拓扑、workload 转译、问题驱动闭环、Stargate 基础设施栈、规模与效率对照，以及规模放大和测量场景插图。
 4. <span id="ref-stargate-announcement"></span>OpenAI、SoftBank，*Announcing The Stargate Project*，2025-01-21。[官方公告](https://openai.com/index/announcing-the-stargate-project/)。
 5. <span id="ref-stargate-sites"></span>OpenAI，*OpenAI, Oracle, and SoftBank Expand Stargate with Five New AI Data Center Sites*，2025-09-23。[官方进展公告](https://openai.com/index/five-new-stargate-sites/)。
 6. <span id="ref-deepseek-v3"></span>DeepSeek-AI，*DeepSeek-V3 Technical Report*，arXiv:2412.19437，2024。[官方代码库与报告入口](https://github.com/deepseek-ai/DeepSeek-V3)。
