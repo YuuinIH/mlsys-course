@@ -82,6 +82,6 @@
   <path d="M660 382 H680" class="support"/>
   <path d="M832 270 V315 H872 V345" class="support"/>
 
-  <path d="M832 270 V465 H100 V270" class="return"/>
+  <path d="M915 210 H945 V465 H100 V270" class="return"/>
   <text x="475" y="490" class="sub">token stream：执行完成不等于用户没有等待</text>
 </svg>
