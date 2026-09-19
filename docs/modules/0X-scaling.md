@@ -1,0 +1,175 @@
+# X. 规模效应：从单卡到多卡，从单机到多机
+
+> 状态：初稿。Part 0 · Systems Thinking for ML。本章先建立对规模的直觉。后续章节再讨论并行训练、通信、调度与恢复机制。
+
+大约十年前，笔者还经常混迹于显卡吧。
+
+那个年代，卡吧流传着一段不断被改编的打油诗：三千预算进卡吧，一路加钱，最后四路泰坦抱回家。预算已经不重要了，四张旗舰显卡先插满再说。配置单豪华到一定程度，楼下还会有人打趣：拿来刷扫雷，能不能稳定六十帧？
+
+这些梗有现实原型。当时真的有人把两张、三张甚至四张 Titan X 装进同一台电脑，用 NVIDIA 的 SLI（Scalable Link Interface）让多张显卡共同渲染游戏。“四路 Titan”后来成了中文硬件社区里顶配电脑的代名词。<sup>[[1]](#ref-sli-meme)</sup>
+
+SLI 名字里的 Scalable，意思是系统可以随着资源增加而扩展。一张 Titan X 已经很快，四张卡都装进机器，也都在工作，帧率似乎就应该接近四倍。实际上，真的是这样的吗？
+
+2015 年，PC Gamer 测试 Maxwell 版 Titan X 时，《中土世界：暗影魔多》（Middle-earth: Shadow of Mordor）在 4K 最高画质下的平均帧率是：<sup>[[2]](#ref-titan-x-sli)</sup>
+
+| GPU 数量 | 平均帧率 |
+| --- | ---: |
+| 1 张 Titan X | 44 FPS |
+| 2 张 Titan X | 75 FPS |
+| 3 张 Titan X | 89 FPS |
+
+第二张卡把 44 FPS 提高到 75 FPS，提升很明显。第三张卡又花掉一张 Titan X 的钱，只换来 14 FPS。换一款游戏，结果还会不同。同一组测试中，《地铁：最后的曙光》（Metro: Last Light）甚至没有识别第三张 GPU。评测者原本准备继续看三卡、四卡，先遇到了 CPU 瓶颈、驱动支持和游戏兼容性。卡数增加了，性能没有按相同倍数增长。
+
+## X.1 买了几份硬件，换回了几份性能
+
+假设同一个任务使用一张 GPU 需要时间 \(T_1\)，使用 \(N\) 张 GPU 需要时间 \(T_N\)。加速比（speedup）写作：
+
+\[
+S(N)=\frac{T_1}{T_N}
+\]
+
+如果观察的是游戏帧率或训练吞吐，也可以用 \(N\) 张 GPU 的吞吐除以单卡吞吐。理想情况下，八张卡把时间缩短到八分之一，或把吞吐提高到八倍，此时 \(S(8)=8\)。
+
+再把加速比除以设备数量，可以得到扩展效率（scaling efficiency）：
+
+\[
+E(N)=\frac{S(N)}{N}
+\]
+
+回到刚才的游戏。双卡的加速比约为 \(75/44=1.70\)，扩展效率约为 85%。三卡的加速比约为 \(89/44=2.02\)，扩展效率已经降到 67%。
+
+扩展效率把“没有跑满”换算成了资源。家用电脑扩展得不好，结果可能只是多买了一张没有充分发挥作用的显卡。训练持续几天或几周时，这部分损失会以 GPU-hours 和电费结算。假如完成同一个任务时扩展效率只有 50%，这批设备消耗的总 GPU-hours 大约是理想情况的两倍。
+
+因此，“使用了 1024 张 GPU”还不足以说明系统扩展得好。我们还要知道这些卡有多少时间在完成有效计算，有多少时间花在移动数据和相互等待上。
+
+## X.2 一点不能并行的工作，会怎样长大
+
+1967 年，Gene Amdahl 讨论大型计算机时提出了一个后来被称为 Amdahl 定律的观察。假设一个任务中有比例 \(p\) 的工作可以理想地并行，剩下的部分仍然要串行执行，那么：<sup>[[3]](#ref-amdahl)</sup>
+
+\[
+S(N)=\frac{1}{(1-p)+\frac{p}{N}}
+\]
+
+这里用这条公式做一个数量级检查即可，重点在分母里的 \(1-p\)。如果一个任务有 95% 可以并行，剩下 5% 不能，那么无论增加多少计算设备，加速比都不会超过 20。
+
+现实中的多 GPU 程序还会产生原来没有的工作。设备之间需要交换信息，先完成的设备可能要等待，任务也很难每次都恰好分成一样大的几份。总时间可以先粗略看成：
+
+\[
+T_{\text{total}}
+=T_{\text{compute}}
++T_{\text{communication}}
++T_{\text{sync}}
++T_{\text{idle}}
+\]
+
+卡数增加以后，\(T_{\text{compute}}\) 可能缩短，其他几项却未必缩短。某个小开销在一张卡上很难察觉，到了几百张卡上，可能让大量设备一起等待。
+
+## X.3 GPU 进入深度学习
+
+SLI 后来逐渐退出了主流游戏电脑，多 GPU 计算却在另一个领域迅速变得重要。
+
+2012 年，AlexNet 在 120 万张 ImageNet 图片上训练。作者用了两张各有 3 GB 显存的 GTX 580，整个训练花了五到六天。论文直接写道，网络规模主要受可用显存和可接受训练时间限制，因此把网络分到两张 GPU 上。<sup>[[4]](#ref-alexnet)</sup>
+
+AlexNet 使用的是面向神经网络的双 GPU 拆分，与游戏 SLI 有不同的 workload 和软件路径。不过，两者都要回答同一个资源问题：
+
+> 一张 GPU 放不下，或者算得太久，增加 GPU 以后能得到多少有效工作？
+
+单卡首先会撞上容量边界，模型和训练过程需要的状态可能超过显存。即使放得下，训练也可能慢到无法接受。在线推理还有另一种压力：一张卡能回答一个人，却无法同时服务不断到来的请求。
+
+这些边界都会把系统推向更多 GPU。可我们已经从 SLI 见过，多一张卡总会损失一些扩展效率。机器学习为什么还在继续增加算力？
+
+## X.4 2020 年以后，很难再对规模保持克制
+
+系统侧的扩展效率会下降，机器学习却一直在奖励更大的模型、更多的数据和更长的训练。
+
+2020 年 1 月，Kaplan 等人发表了语言模型 scaling laws 的工作。他们观察到，测试损失与模型规模、数据量和训练计算量之间呈现相当规律的幂律关系，其中一些趋势跨越了七个数量级。<sup>[[5]](#ref-scaling-laws)</sup>
+
+同年 5 月，GPT-3 论文公布。最大的模型有 1750 亿参数，是此前非稀疏语言模型参数量的十倍。论文还训练了从 1.25 亿到 130 亿参数的一系列较小模型，用来观察能力如何随规模变化。在许多任务上，zero-shot、one-shot 和 few-shot 表现随着模型变大而提高，虽然也有一些任务仍然表现很差。<sup>[[6]](#ref-gpt3)</sup>
+
+这些结果让继续增加模型、数据和训练计算成为一条有实验结果支持的路线。游戏玩家那里有些奢侈的“再加一张卡”，在机器学习研究里有了明确的收益。研究者开始用更大的机器训练以前放不下、也算不完的模型。
+
+这里有两种 scaling，名字相同，方向不同：
+
+```text
+模型侧：更多参数、数据与训练计算，能否换来更好的模型？
+系统侧：更多 GPU 与机器，能否换来更多有效计算？
+```
+
+2020 年前后的结果推动了第一行，第二行仍然受四路 Titan 留下来的老问题约束。模型规模可以增长得很快。系统把硬件转化成有效工作的能力跟不上时，训练时间和成本就会吞掉这部分收益。
+
+这些工作也改变了“更多算力拿来做什么”的答案。新增的 GPU 可以用来缩短原来那次训练，也可以承载更大的模型和数据。后一种选择不会让 wall-clock time 明显下降，却能完成过去做不到的工作。并行计算很早就为这两种目标起了不同的名字。
+
+## X.5 同一道题做快一点，还是去做更大的题
+
+并行计算通常区分 strong scaling 和 weak scaling：<sup>[[7]](#ref-llnl-scaling)</sup>
+
+| 观察方式 | 问题规模 | 想知道什么 |
+| --- | --- | --- |
+| Strong scaling | 固定 | 增加设备后，同一个任务能快多少 |
+| Weak scaling | 随设备数量增长 | 每张设备承担近似相同的工作时，总系统能处理多大的任务 |
+
+四路 Titan 跑同一个游戏基准测试，或者八张 GPU 训练同一个模型，属于 strong scaling 的问题。任务没有变，目标是尽快完成。随着每张设备分到的计算越来越少，固定开销和设备间协作会越来越显眼。
+
+John Gustafson 在 1988 年重新讨论 Amdahl 定律时指出，现实中获得更大的机器以后，人们经常会扩大问题，而不是永远拿它计算原来那道小题。<sup>[[8]](#ref-gustafson)</sup> 我们购买更多计算资源，可能是为了使用更精细的模拟、更大的数据集，或过去根本跑不动的模型。Weak scaling 描述的就是这种视角。
+
+假设昨天用一张 GPU 训练一个小模型需要一天，今天有了八张 GPU，我们可以把同一个模型缩短到三小时，也可以增加参数量、喂入更多数据，把训练时间仍然维持在一天。后一种情况下，wall-clock time 没有下降，完成的工作却变多了。
+
+GPT-3 并不是一次标准的 weak-scaling 实验。模型规模、数据量、训练配置和每张 GPU 承担的工作都可能一起变化。不过，它体现了 Gustafson 所描述的规模视角：得到更多计算资源以后，人们往往会去做以前做不了的大问题。
+
+此时只看 speedup 很容易误判。更多硬件的价值，有时表现为更快，有时表现为原来做不到的规模。
+
+## X.6 从一张卡走出一台机器
+
+单卡程序的世界相对安静。计算和显存都在一张设备上，失败通常也只影响一个进程。
+
+到了单机多卡，每张 GPU 有自己的显存和执行进度。只要任务需要共同完成，数据就会在设备之间移动，设备也可能彼此等待。机器里的 GPU 位置不同，走过的数据路径也可能不同。某一张卡慢几毫秒，只有八张卡时也许不算严重；如果其余设备每一步都在等它，这几毫秒会反复进入整场训练。
+
+一台服务器能安装的 GPU 数量、提供的功率和容纳的显存都有物理上限。规模继续增加，GPU 只能分布到多台机器：
+
+```text
+1 GPU
+  ↓
+8 GPUs in one server
+  ↓
+8 servers
+  ↓
+128 servers
+  ↓
+thousands of GPUs
+```
+
+跨出机箱以后，网络进入执行路径。机器之间的数据交换要经过网卡、交换机和更长的链路。带宽会被分享，延迟不能再忽略，任何一段拥塞都可能让昂贵的 GPU 等待。
+
+机器数量还改变了故障的含义。一台电脑稳定运行几天并不稀奇。许多机器共同运行很久时，某张卡、某条链路或某台服务器出问题就不能继续按极小概率处理。
+
+负载不均也会变贵。八张卡里有一张慢，七张卡可能在等。上千张卡里有一个参与者晚到，等待的资源就不再是桌面电脑上的几个空闲核心。Scaling efficiency 每下降一个百分点，背后都可能是大量 GPU-hours。
+
+规模一路增加时，系统会逐步遇到这些问题：
+
+- 计算并不能全部同时进行；
+- 设备之间交换信息需要时间；
+- 同步会把局部的慢变成整体的等待；
+- 工作很难永远平均分配；
+- 一台机器装不下时，网络会成为系统的一部分；
+- 参与的设备越多，遇到故障的机会越多。
+
+后面的课程会讨论具体解法。本章先记住这些问题出现的顺序。
+
+## X.7 对规模保留一个问号
+
+从四路 Titan 到大模型训练，硬件数量已经跨过几个数量级，最初的问题没有变化：投入 \(N\) 份资源，最后得到多少有用的工作？
+
+以后看到一张漂亮的扩展曲线，先弄清它固定的是问题规模，还是每张 GPU 的工作量。横轴增加十倍以后，通信、同步和等待分别占了多少时间？多出来的设备是在计算还是在等？从 8 张卡走到 1000 张卡，原来的结论是否仍然成立？
+
+ML 不断给我们扩大模型、数据和算力的理由，系统规模也会把原本可以忽略的成本带进来。一张卡上的一次数据移动、几毫秒等待或一次偶发故障，到了大集群里都可能进入总训练时间和成本。
+
+## 图像与文献参考
+
+1. <span id="ref-sli-meme"></span>36氪，*消费级显卡不再支持 SLI，对玩家来说是好是坏？*，2022。[文章](https://www.36kr.com/p/1933488983214470)。文章回顾了“四路泰坦战大作”从高配游戏方案变成中文硬件社区梗的过程。
+2. <span id="ref-titan-x-sli"></span>Maximum PC Staff，*Nvidia GeForce GTX Titan X SLI Benchmarks*，PC Gamer，2015。[测试与原始表格](https://www.pcgamer.com/nvidia-geforce-gtx-titan-x-sli-benchmarks-2015/)；Dave James，*Benchmarks: GTX Titan X in SLI*，PC Gamer，2015。[三卡与四卡讨论](https://www.pcgamer.com/benchmarks-gtx-titan-x-in-sli/)。前者给出单卡、双卡和三卡在 4K 游戏中的帧率，并记录不同游戏的扩展差异与第三张 GPU 未被识别的情况；后者讨论继续增加到三卡和四卡后的边际收益。
+3. <span id="ref-amdahl"></span>Gene M. Amdahl，*Validity of the Single Processor Approach to Achieving Large Scale Computing Capabilities*，AFIPS Spring Joint Computer Conference，1967。[ACM DOI](https://doi.org/10.1145/1465482.1465560)。
+4. <span id="ref-alexnet"></span>Alex Krizhevsky、Ilya Sutskever、Geoffrey E. Hinton，*ImageNet Classification with Deep Convolutional Neural Networks*，NeurIPS，2012。[论文页面](https://proceedings.neurips.cc/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html)。
+5. <span id="ref-scaling-laws"></span>Jared Kaplan et al.，*Scaling Laws for Neural Language Models*，2020。[OpenAI 论文介绍](https://openai.com/index/scaling-laws-for-neural-language-models/)；[arXiv:2001.08361](https://arxiv.org/abs/2001.08361)。
+6. <span id="ref-gpt3"></span>Tom B. Brown et al.，*Language Models are Few-Shot Learners*，2020。[arXiv:2005.14165](https://arxiv.org/abs/2005.14165)。
+7. <span id="ref-llnl-scaling"></span>Lawrence Livermore National Laboratory，*Introduction to Parallel Computing Tutorial*。[Strong and weak scaling](https://hpc.llnl.gov/documentation/tutorials/introduction-parallel-computing-tutorial)。
+8. <span id="ref-gustafson"></span>John L. Gustafson，*Reevaluating Amdahl's Law*，Communications of the ACM 31(5)，1988。[ACM DOI](https://doi.org/10.1145/42411.42415)。
