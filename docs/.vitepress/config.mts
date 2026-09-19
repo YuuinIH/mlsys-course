@@ -4,6 +4,20 @@ export default defineConfig({
   base: process.env.VITEPRESS_BASE ?? '/',
   title: 'MLSys Course',
   description: '从一段 ML 代码到可扩展、可观测的生产系统。',
+  markdown: {
+    math: true,
+    config(md) {
+      for (const rule of ['math_inline', 'math_block'] as const) {
+        const render = md.renderer.rules[rule]
+        if (!render) continue
+
+        // VitePress 1.x lowercases MathJax's SVG viewBox while compiling Markdown.
+        // A bound attribute preserves the casing and keeps glyphs inside the SVG.
+        md.renderer.rules[rule] = (...args) =>
+          render(...args).replace(/ viewbox="([^"]+)"/g, ` :viewBox="'$1'"`)
+      }
+    }
+  },
   themeConfig: {
     nav: [
       { text: '首页', link: '/' },
@@ -28,6 +42,7 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: '0. 为啥需要 MLSys？', link: '/modules/00-systems-thinking' },
+          { text: 'X. 规模效应：从单卡到多机', link: '/modules/0X-scaling' },
           { text: '1. Benchmark 可信吗', link: '/modules/01-measurement' }
         ]
       },

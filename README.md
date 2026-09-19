@@ -37,7 +37,7 @@
 | 5. Operating ML Systems | 如何判断系统健康、可靠且成本合理？ |
 | 6. Design an ML System | 如何用证据为系统设计辩护？ |
 
-完整的 17 章路径见[学习地图](docs/guide/learning-map.md)，课程设计说明见[课程大纲](COURSE_OUTLINE.md)。
+完整课程路径见[学习地图](docs/guide/learning-map.md)，课程设计说明见[课程大纲](COURSE_OUTLINE.md)。
 
 ## 内容形态
 

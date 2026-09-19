@@ -24,6 +24,7 @@ docs/
 
 ```text
 00-systems-thinking.md
+0X-scaling.md
 01-measurement.md
 02-workloads.md
 03-gpu-foundations.md

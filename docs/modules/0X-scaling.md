@@ -8,7 +8,7 @@
 
 这些梗有现实原型。当时真的有人把两张、三张甚至四张 Titan X 装进同一台电脑，用 NVIDIA 的 SLI（Scalable Link Interface）让多张显卡共同渲染游戏。“四路 Titan”后来成了中文硬件社区里顶配电脑的代名词。<sup>[[1]](#ref-sli-meme)</sup>
 
-SLI 名字里的 Scalable，意思是系统可以随着资源增加而扩展。一张 Titan X 已经很快，四张卡都装进机器，也都在工作，帧率似乎就应该接近四倍。实际上，真的是这样的吗？
+SLI 名字里的 Scalable，意思是系统可以随着资源增加而扩展。一张 Titan X 已经很快，四张卡都装进机器，也都在工作，帧率似乎就应该接近四倍。配置单看起来很有道理，跑起来却是另一回事。
 
 2015 年，PC Gamer 测试 Maxwell 版 Titan X 时，《中土世界：暗影魔多》（Middle-earth: Shadow of Mordor）在 4K 最高画质下的平均帧率是：<sup>[[2]](#ref-titan-x-sli)</sup>
 
@@ -22,47 +22,47 @@ SLI 名字里的 Scalable，意思是系统可以随着资源增加而扩展。�
 
 ## X.1 买了几份硬件，换回了几份性能
 
-假设同一个任务使用一张 GPU 需要时间 \(T_1\)，使用 \(N\) 张 GPU 需要时间 \(T_N\)。加速比（speedup）写作：
+假设同一个任务使用一张 GPU 需要时间 $T_1$，使用 $N$ 张 GPU 需要时间 $T_N$。加速比（speedup）写作：
 
-\[
+$$
 S(N)=\frac{T_1}{T_N}
-\]
+$$
 
-如果观察的是游戏帧率或训练吞吐，也可以用 \(N\) 张 GPU 的吞吐除以单卡吞吐。理想情况下，八张卡把时间缩短到八分之一，或把吞吐提高到八倍，此时 \(S(8)=8\)。
+如果观察的是游戏帧率或训练吞吐，也可以用 $N$ 张 GPU 的吞吐除以单卡吞吐。理想情况下，八张卡把时间缩短到八分之一，或把吞吐提高到八倍，此时 $S(8)=8$。
 
 再把加速比除以设备数量，可以得到扩展效率（scaling efficiency）：
 
-\[
+$$
 E(N)=\frac{S(N)}{N}
-\]
+$$
 
-回到刚才的游戏。双卡的加速比约为 \(75/44=1.70\)，扩展效率约为 85%。三卡的加速比约为 \(89/44=2.02\)，扩展效率已经降到 67%。
+回到刚才的游戏。双卡的加速比约为 $75/44=1.70$，扩展效率约为 85%。三卡的加速比约为 $89/44=2.02$，扩展效率已经降到 67%。
 
 扩展效率把“没有跑满”换算成了资源。家用电脑扩展得不好，结果可能只是多买了一张没有充分发挥作用的显卡。训练持续几天或几周时，这部分损失会以 GPU-hours 和电费结算。假如完成同一个任务时扩展效率只有 50%，这批设备消耗的总 GPU-hours 大约是理想情况的两倍。
 
-因此，“使用了 1024 张 GPU”还不足以说明系统扩展得好。我们还要知道这些卡有多少时间在完成有效计算，有多少时间花在移动数据和相互等待上。
+“使用了 1024 张 GPU”还不足以说明系统扩展得好。我们还要知道这些卡有多少时间在完成有效计算，有多少时间花在移动数据和相互等待上。
 
 ## X.2 一点不能并行的工作，会怎样长大
 
-1967 年，Gene Amdahl 讨论大型计算机时提出了一个后来被称为 Amdahl 定律的观察。假设一个任务中有比例 \(p\) 的工作可以理想地并行，剩下的部分仍然要串行执行，那么：<sup>[[3]](#ref-amdahl)</sup>
+1967 年，Gene Amdahl 讨论大型计算机时提出了一个后来被称为 Amdahl 定律的观察。假设一个任务中有比例 $p$ 的工作可以理想地并行，剩下的部分仍然要串行执行，那么：<sup>[[3]](#ref-amdahl)</sup>
 
-\[
+$$
 S(N)=\frac{1}{(1-p)+\frac{p}{N}}
-\]
+$$
 
-这里用这条公式做一个数量级检查即可，重点在分母里的 \(1-p\)。如果一个任务有 95% 可以并行，剩下 5% 不能，那么无论增加多少计算设备，加速比都不会超过 20。
+这条公式在这里用来做数量级检查。分母里的 $1-p$ 决定了加速的上限：如果一个任务有 95% 可以并行，剩下 5% 不能，那么无论增加多少计算设备，加速比都不会超过 20。
 
 现实中的多 GPU 程序还会产生原来没有的工作。设备之间需要交换信息，先完成的设备可能要等待，任务也很难每次都恰好分成一样大的几份。总时间可以先粗略看成：
 
-\[
+$$
 T_{\text{total}}
 =T_{\text{compute}}
 +T_{\text{communication}}
 +T_{\text{sync}}
 +T_{\text{idle}}
-\]
+$$
 
-卡数增加以后，\(T_{\text{compute}}\) 可能缩短，其他几项却未必缩短。某个小开销在一张卡上很难察觉，到了几百张卡上，可能让大量设备一起等待。
+卡数增加以后，$T_{\text{compute}}$ 可能缩短，其他几项却未必缩短。某个小开销在一张卡上很难察觉，到了几百张卡上，可能让大量设备一起等待。
 
 ## X.3 GPU 进入深度学习
 
@@ -70,13 +70,13 @@ SLI 后来逐渐退出了主流游戏电脑，多 GPU 计算却在另一个领�
 
 2012 年，AlexNet 在 120 万张 ImageNet 图片上训练。作者用了两张各有 3 GB 显存的 GTX 580，整个训练花了五到六天。论文直接写道，网络规模主要受可用显存和可接受训练时间限制，因此把网络分到两张 GPU 上。<sup>[[4]](#ref-alexnet)</sup>
 
-AlexNet 使用的是面向神经网络的双 GPU 拆分，与游戏 SLI 有不同的 workload 和软件路径。不过，两者都要回答同一个资源问题：
+AlexNet 使用的是面向神经网络的双 GPU 拆分，workload 和软件路径都与游戏 SLI 不同，但两者面对同一个资源问题：
 
 > 一张 GPU 放不下，或者算得太久，增加 GPU 以后能得到多少有效工作？
 
 单卡首先会撞上容量边界，模型和训练过程需要的状态可能超过显存。即使放得下，训练也可能慢到无法接受。在线推理还有另一种压力：一张卡能回答一个人，却无法同时服务不断到来的请求。
 
-这些边界都会把系统推向更多 GPU。可我们已经从 SLI 见过，多一张卡总会损失一些扩展效率。机器学习为什么还在继续增加算力？
+这些边界都会把系统推向更多 GPU。可我们已经从 SLI 见过，每多一张卡，扩展效率都可能再损失一些。机器学习为什么还在继续增加算力？
 
 ## X.4 2020 年以后，很难再对规模保持克制
 
@@ -84,9 +84,23 @@ AlexNet 使用的是面向神经网络的双 GPU 拆分，与游戏 SLI 有不�
 
 2020 年 1 月，Kaplan 等人发表了语言模型 scaling laws 的工作。他们观察到，测试损失与模型规模、数据量和训练计算量之间呈现相当规律的幂律关系，其中一些趋势跨越了七个数量级。<sup>[[5]](#ref-scaling-laws)</sup>
 
+![Kaplan 等人的论文图 1：语言模型测试损失分别随训练计算量、数据量和参数量增加而平滑下降](/images/modules/0X/scaling-laws-figure-1.png)
+
+*图 X-1：Kaplan 等人的论文图 1。三幅图都使用对数横轴；点和拟合线在很大的尺度范围内仍然贴得很近。纵轴是测试损失，越低越好。*
+
+这张图当时最有诱惑力的地方，是曲线没有很快撞上一堵墙。增加参数、数据或训练计算量，测试损失仍在下降。幂律也意味着边际收益会变小：为了再换来一点下降，投入往往要按倍数增加。
+
 同年 5 月，GPT-3 论文公布。最大的模型有 1750 亿参数，是此前非稀疏语言模型参数量的十倍。论文还训练了从 1.25 亿到 130 亿参数的一系列较小模型，用来观察能力如何随规模变化。在许多任务上，zero-shot、one-shot 和 few-shot 表现随着模型变大而提高，虽然也有一些任务仍然表现很差。<sup>[[6]](#ref-gpt3)</sup>
 
-这些结果让继续增加模型、数据和训练计算成为一条有实验结果支持的路线。游戏玩家那里有些奢侈的“再加一张卡”，在机器学习研究里有了明确的收益。研究者开始用更大的机器训练以前放不下、也算不完的模型。
+![GPT-3 论文图 1.2：三种模型在一个字符操作任务上的准确率随上下文示例数量变化](/images/modules/0X/gpt3-in-context-scaling.png)
+
+*图 X-2：GPT-3 论文图 1.2。横轴是上下文里提供的示例数量，纵轴是一个字符操作任务的准确率。1750 亿参数模型从示例中获益明显，13 亿参数模型几乎没有学会这个任务。这只是一项具体实验，不能当作通用的“智能曲线”。*
+
+这些结果给继续增加模型、数据和训练计算提供了实验依据。游戏玩家那里有些奢侈的“再加一张卡”，在机器学习研究里可以换来明确的收益。研究者开始用更大的机器训练以前放不下、也算不完的模型。
+
+![GPT-3 论文图 2.2：BERT、T5 和 GPT-3 系列模型训练计算量的对数柱状图](/images/modules/0X/gpt3-training-compute.png)
+
+*图 X-3：GPT-3 论文图 2.2。纵轴是训练使用的 petaflop/s-days，并采用对数刻度。模型系列向右变大时，训练计算量也跨过多个数量级。*
 
 这里有两种 scaling，名字相同，方向不同：
 
@@ -95,7 +109,7 @@ AlexNet 使用的是面向神经网络的双 GPU 拆分，与游戏 SLI 有不�
 系统侧：更多 GPU 与机器，能否换来更多有效计算？
 ```
 
-2020 年前后的结果推动了第一行，第二行仍然受四路 Titan 留下来的老问题约束。模型规模可以增长得很快。系统把硬件转化成有效工作的能力跟不上时，训练时间和成本就会吞掉这部分收益。
+2020 年前后的结果推动了第一行，第二行仍然受四路 Titan 留下来的老问题约束。模型规模可以增长得很快；系统把硬件转化成有效工作的能力如果跟不上，训练时间和成本就会吞掉这部分收益。
 
 这些工作也改变了“更多算力拿来做什么”的答案。新增的 GPU 可以用来缩短原来那次训练，也可以承载更大的模型和数据。后一种选择不会让 wall-clock time 明显下降，却能完成过去做不到的工作。并行计算很早就为这两种目标起了不同的名字。
 
@@ -114,7 +128,7 @@ John Gustafson 在 1988 年重新讨论 Amdahl 定律时指出，现实中获得
 
 假设昨天用一张 GPU 训练一个小模型需要一天，今天有了八张 GPU，我们可以把同一个模型缩短到三小时，也可以增加参数量、喂入更多数据，把训练时间仍然维持在一天。后一种情况下，wall-clock time 没有下降，完成的工作却变多了。
 
-GPT-3 并不是一次标准的 weak-scaling 实验。模型规模、数据量、训练配置和每张 GPU 承担的工作都可能一起变化。不过，它体现了 Gustafson 所描述的规模视角：得到更多计算资源以后，人们往往会去做以前做不了的大问题。
+GPT-3 与标准 weak-scaling 实验的控制条件不同。它的模型规模、数据量、训练配置和每张 GPU 承担的工作都可能一起变化。这里借它说明的是 Gustafson 所描述的规模视角：得到更多计算资源以后，人们往往会去做以前做不了的大问题。
 
 此时只看 speedup 很容易误判。更多硬件的价值，有时表现为更快，有时表现为原来做不到的规模。
 
@@ -153,11 +167,29 @@ thousands of GPUs
 - 一台机器装不下时，网络会成为系统的一部分；
 - 参与的设备越多，遇到故障的机会越多。
 
-后面的课程会讨论具体解法。本章先记住这些问题出现的顺序。
+本章先记下这些问题出现的顺序，后面的课程再讨论具体解法。
 
-## X.7 对规模保留一个问号
+## X.7 四条曲线不会按同一个倍率增长
 
-从四路 Titan 到大模型训练，硬件数量已经跨过几个数量级，最初的问题没有变化：投入 \(N\) 份资源，最后得到多少有用的工作？
+谈到规模时，人们经常把四件事揉在一起：模型能力提高了多少，训练投入扩大了多少，算法和软件省下了多少计算，最后又花了多少钱。它们之间有关联，却没有一条可以直接换算的统一刻度。
+
+Epoch AI 在 2026 年汇总的趋势中，前沿语言模型的训练计算量自 2020 年以来约为每年增长 5 倍，预训练计算效率约为每年提高 3 倍，训练成本约为每年增长 3.5 倍。能力一侧使用的是 ECI（Epoch Capabilities Index）：它把五十多个基准测试拼成一个综合代理指标。推理模型在 2024 年 9 月出现以后，前沿水平的趋势约为每年增加 14 个 ECI 点。<sup>[[9]](#ref-epoch-trends)</sup>
+
+![将训练计算量、预训练计算效率和训练成本归一化后的一年增长曲线，以及单独绘制的 ECI 能力代理曲线](/images/modules/0X/scale-efficiency-cost-rates.svg)
+
+*图 X-4：把公开趋势率放到一起看。左图把起点归一化为 1，展示训练计算量、预训练计算效率和训练成本按各自趋势率增长一年后的倍率。右图单独画 ECI，因为 ECI 点数不是倍数。各项统计的时间区间和样本口径不同，这张图比较的是斜率的数量级，并非同一项实验中的四个变量。*
+
+“计算效率提高 3 倍”的意思，是达到同一目标所需的计算量降到原来的约三分之一。早一些的研究用 ImageNet 上达到 AlexNet 水平作为固定目标，估计 2012 到 2019 年间所需计算量减少了 44 倍，相当于算法效率约每 16 个月翻一倍。<sup>[[10]](#ref-algorithmic-efficiency)</sup> 这种比较必须固定目标。模型和任务如果同时变化，就无法判断究竟省下了多少计算。
+
+实验室会把一部分效率收益继续投入更大的训练，所以前沿训练并没有停留在原来的计算预算。训练计算量增长得比效率快，训练成本也继续上升。这里的成本通常还是估算值，会受芯片价格、利用率、训练时长和核算方法影响。
+
+ECI 是一个经过拟合的综合指标，14 个 ECI 点不等于“智能提高 14%”。单项基准还可能很快饱和，换一个基准又会得到另一条曲线。我们可以比较能力代理指标有没有继续上升，也可以观察每增加一个数量级的计算换回多少改进，但不能把图中的 5 倍和 14 点直接相除，得到一个貌似精确的“智能投资回报率”。
+
+于是会出现一个看似矛盾的现象：算法和软件一直在省计算，整个行业花在训练上的计算量和钱却还在增加。实验室把省下来的计算又用在了更大的问题上。
+
+## X.8 对规模保留一个问号
+
+从四路 Titan 到大模型训练，硬件数量已经跨过几个数量级，最初的问题没有变化：投入 $N$ 份资源，最后得到多少有用的工作？
 
 以后看到一张漂亮的扩展曲线，先弄清它固定的是问题规模，还是每张 GPU 的工作量。横轴增加十倍以后，通信、同步和等待分别占了多少时间？多出来的设备是在计算还是在等？从 8 张卡走到 1000 张卡，原来的结论是否仍然成立？
 
@@ -169,7 +201,9 @@ ML 不断给我们扩大模型、数据和算力的理由，系统规模也会�
 2. <span id="ref-titan-x-sli"></span>Maximum PC Staff，*Nvidia GeForce GTX Titan X SLI Benchmarks*，PC Gamer，2015。[测试与原始表格](https://www.pcgamer.com/nvidia-geforce-gtx-titan-x-sli-benchmarks-2015/)；Dave James，*Benchmarks: GTX Titan X in SLI*，PC Gamer，2015。[三卡与四卡讨论](https://www.pcgamer.com/benchmarks-gtx-titan-x-in-sli/)。前者给出单卡、双卡和三卡在 4K 游戏中的帧率，并记录不同游戏的扩展差异与第三张 GPU 未被识别的情况；后者讨论继续增加到三卡和四卡后的边际收益。
 3. <span id="ref-amdahl"></span>Gene M. Amdahl，*Validity of the Single Processor Approach to Achieving Large Scale Computing Capabilities*，AFIPS Spring Joint Computer Conference，1967。[ACM DOI](https://doi.org/10.1145/1465482.1465560)。
 4. <span id="ref-alexnet"></span>Alex Krizhevsky、Ilya Sutskever、Geoffrey E. Hinton，*ImageNet Classification with Deep Convolutional Neural Networks*，NeurIPS，2012。[论文页面](https://proceedings.neurips.cc/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html)。
-5. <span id="ref-scaling-laws"></span>Jared Kaplan et al.，*Scaling Laws for Neural Language Models*，2020。[OpenAI 论文介绍](https://openai.com/index/scaling-laws-for-neural-language-models/)；[arXiv:2001.08361](https://arxiv.org/abs/2001.08361)。
-6. <span id="ref-gpt3"></span>Tom B. Brown et al.，*Language Models are Few-Shot Learners*，2020。[arXiv:2005.14165](https://arxiv.org/abs/2005.14165)。
+5. <span id="ref-scaling-laws"></span>Jared Kaplan et al.，*Scaling Laws for Neural Language Models*，2020。[OpenAI 论文介绍](https://openai.com/index/scaling-laws-for-neural-language-models/)；[arXiv:2001.08361](https://arxiv.org/abs/2001.08361)。图 X-1 截自论文图 1。
+6. <span id="ref-gpt3"></span>Tom B. Brown et al.，*Language Models are Few-Shot Learners*，2020。[arXiv:2005.14165](https://arxiv.org/abs/2005.14165)。图 X-2 与图 X-3 分别截自论文图 1.2 和图 2.2。
 7. <span id="ref-llnl-scaling"></span>Lawrence Livermore National Laboratory，*Introduction to Parallel Computing Tutorial*。[Strong and weak scaling](https://hpc.llnl.gov/documentation/tutorials/introduction-parallel-computing-tutorial)。
 8. <span id="ref-gustafson"></span>John L. Gustafson，*Reevaluating Amdahl's Law*，Communications of the ACM 31(5)，1988。[ACM DOI](https://doi.org/10.1145/42411.42415)。
+9. <span id="ref-epoch-trends"></span>Epoch AI，*Trends in Artificial Intelligence*，2026 年 9 月访问。[趋势汇总](https://epoch.ai/trends)；[Epoch Capabilities Index 说明](https://epoch.ai/eci)。训练计算量、预训练计算效率与训练成本采用该页面给出的前沿语言模型趋势；ECI 是由五十多个基准测试组合出的能力代理指标，其绝对点数没有独立含义。
+10. <span id="ref-algorithmic-efficiency"></span>Danny Hernandez、Tom B. Brown，*Measuring the Algorithmic Efficiency of Neural Networks*，2020。[arXiv:2005.04305](https://arxiv.org/abs/2005.04305)。论文以达到 AlexNet 在 ImageNet 上的表现为固定目标，估计 2012 至 2019 年所需训练计算量减少 44 倍。
