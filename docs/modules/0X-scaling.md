@@ -121,9 +121,11 @@ AlexNet 使用的是面向神经网络的双 GPU 拆分，workload 和软件路�
 模型侧：增加模型参数、数据和训练计算量，能换来多少模型性能的改善？
 ```
 
-Amdahl 定律和扩展效率属于第一行，关心系统效率。Scaling laws 属于第二行，关心学习效果。两者各自成立，却不能互相替代。模型侧说“继续加大仍然有效”，系统侧说“继续加大有损耗”，现代 MLSys 必须同时面对这两句话。
+Amdahl 定律和扩展效率属于第一行，关心系统效率；Scaling laws 属于第二行，关心学习效果。**两种增长不遵循同一条收益曲线。** 对固定任务增加 GPU，额外的通信与同步通常会损耗加速收益；但模型能力跨过某项任务的**可用性门槛**时，实际价值可能从「基本做不了」跃升为「可以交给它完成」。模型表现的渐进改善，不一定带来渐进的使用体验。
 
-2020 年前后的结果推动了模型侧，系统侧仍然受四路泰坦留下来的老问题约束。模型规模可以增长得很快；系统把硬件转化成有效工作的能力如果跟不上，训练时间和成本就会吞掉这部分收益。
+2022 年底 ChatGPT 带来的震撼，可以看作这种使用体验变化的例子。不过，它来自 GPT-3.5 系列模型与指令微调、RLHF、对话交互等多方面的结合，不能简单说是参数规模突破了某个临界点。研究者把部分突现的任务表现称为 *emergent abilities*，但它是否对应模型内部的突然相变仍有争议：有些跃迁可能来自评价指标本身。<sup>[[16]](#ref-emergence-debate)</sup><sup>[[17]](#ref-chatgpt-launch)</sup>
+
+这就构成了一种有趣的不对称：系统为了扩大计算规模付出的代价，可能随着规模增加而变大；模型跨过任务门槛产生的收益，却未必按相同的比例变化。两者都需要衡量，不能互相替代。
 
 这些工作也改变了“更多算力拿来做什么”的答案。新增的 GPU 可以用来缩短原来那次训练，也可以承载更大的模型和数据。后一种选择不会让 wall-clock time 明显下降，却能完成过去做不到的工作。并行计算很早就为这两种目标起了不同的名字。
 
@@ -243,7 +245,7 @@ $
 
 *示意：曲线根据 $1/E(N)$ 直接绘制，不是实测集群数据。成本增加不等于增加 GPU 永远不划算——更短的交付时间、不同机器的单价与故障风险仍会改变决策。*
 
-这里还有一个经常被忽略的区别：训练计算最优配置决定你**想完成多少工作**；系统扩展效率影响你**为完成这些工作多付出多少资源**；现实预算与时间期限则决定最终选择。扩大 GPU 数量不一定节省 GPU-hours，却可能是按期完成训练的必要条件。
+这里还有一个经常被忽略的区别：训练计算最优配置决定你**想完成多少工作**；系统扩展效率影响你**为完成这些工作多付出多少资源**。扩大 GPU 数量不一定节省 GPU-hours，却可能是按期完成训练的必要条件。更重要的是，如果更多训练投入让模型跨过了某项任务的可用性门槛，新增能力的价值也不能直接从 $E(N)$ 或 GPU-hours 中读出来。
 
 所以真正要问的，很少只是“1024 张 GPU 能让程序快多少”。更值得追问的是：在给定的时间和预算下，选择多大模型、多少数据、哪种并行策略，最后能换回什么价值？
 
@@ -255,7 +257,7 @@ $
 
 ML 不断给我们扩大模型、数据和算力的理由，系统规模也会把原本可以忽略的成本带进来。一张卡上的一次数据移动、几毫秒等待或一次偶发故障，到了大集群里都可能进入总训练时间和成本。
 
-投入更多计算资源的理由一直在变，更多资源始终不等于等比例的收益这件事没有变。
+更多 GPU 不保证等比例加速，更多训练计算也不保证等比例提升模型能力。但有时值得投入的，恰恰是让模型第一次跨过某项任务的可用性门槛。
 
 ## 图像与文献参考
 
@@ -274,3 +276,5 @@ ML 不断给我们扩大模型、数据和算力的理由，系统规模也会�
 13. <span id="ref-epoch-algo-efficiency"></span>Epoch AI，*Algorithmic progress in language models*，2024。[文章](https://epoch.ai/blog/algorithmic-progress-in-language-models)。该文汇总语言模型算法效率的多种估计，其中达到固定能力水平所需训练计算量的下降速度约为每 8 个月减半；不同估计的区间较宽，本章只引用其数量级。
 14. <span id="ref-jevons"></span>William Stanley Jevons，*The Coal Question*，1865；反弹效应综述见 Harry D. Saunders，*The Khazzoom-Brookes Postulate and Neoclassical Growth*，The Energy Journal，1992。[Jevons 悖论条目](https://en.wikipedia.org/wiki/Jevons_paradox)。本文借用效率提高反而增加总消耗的观察，说明算法效率的收益常被重新投入更大规模的训练。
 15. <span id="ref-metr-horizon"></span>METR，*Time Horizon 1.1*，2026-01-29。[更新说明](https://metr.org/blog/2026-1-29-time-horizon-1-1/)；[任务时长指标与方法](https://metr.org/time-horizons/)。新评估套件中，2023 年以来前沿模型 50% 成功率任务时长的拟合翻倍周期约 131 天；按 $2^{365/131}$ 折算的一年约 $6.9\times$ 是**趋势换算值**。任务主要为软件工程、ML 和网络安全，不能据此外推全部智能表现。
+16. <span id="ref-emergence-debate"></span>Jason Wei et al.，*Emergent Abilities of Large Language Models*，TMLR，2022。[论文](https://arxiv.org/abs/2206.07682)；Rylan Schaeffer et al.，*Are Emergent Abilities of Large Language Models a Mirage?*，NeurIPS，2023。[论文](https://papers.neurips.cc/paper_files/paper/2023/hash/adc98a266f45005c403b8311ca7e8bd7-Abstract-Conference.html)。前者讨论规模增加时观察到的任务能力跃迁，后者指出部分跳变可能来自评价指标，并不必然说明模型内部出现相变。
+17. <span id="ref-chatgpt-launch"></span>OpenAI，*Introducing ChatGPT*，2022-11-30。[官方介绍](https://openai.com/index/chatgpt/)。介绍了 GPT-3.5 系列基础、监督微调、RLHF 与对话交互方式。
