@@ -48,7 +48,6 @@ text{fill:#e9eef6}.subtitle,.tick,.note{fill:#bdc9d8}.panel{fill:#1d2a3a;stroke:
 <line x1="548" y1="527" x2="579" y2="527" class="curve gold"/><text x="590" y="532" class="legend">训练成本</text>
 <line x1="724" y1="527" x2="755" y2="527" class="curve green"/><text x="766" y="532" class="legend">预训练计算效率</text>
 </g>
-<text x="46" y="578" class="note">Agent 曲线：METR TH1.1，2023 年以来前沿模型拟合趋势约每 131 天翻倍，换算成年增长约 7×。</text>
-<text x="46" y="600" class="note">Task Horizon 衡量给定成功率下的技术任务难度；不是 Agent 实际工作时长，更不是“综合智能增长七倍”。</text>
-<text x="46" y="619" class="note">曲线根据不同来源与窗口的近似趋势绘制，仅用于建立直觉；未来增长不保证保持同样速度。</text>
+<text x="46" y="583" class="note">紫线：METR 技术任务时长趋势，约 131 天翻倍；不代表综合智能增长 7 倍。</text>
+<text x="46" y="605" class="note">不同来源、不同统计窗口的年度趋势示意；请勿将倍率视为严格可比的测量结果。</text>
 </svg>
