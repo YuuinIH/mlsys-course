@@ -125,6 +125,8 @@ Amdahl 定律和扩展效率属于第一行，关心系统效率；Scaling laws 
 
 2022 年底 ChatGPT 带来的震撼，可以看作这种使用体验变化的例子。不过，它来自 GPT-3.5 系列模型与指令微调、RLHF、对话交互等多方面的结合，不能简单说是参数规模突破了某个临界点。研究者把部分突现的任务表现称为 *emergent abilities*，但它是否对应模型内部的突然相变仍有争议：有些跃迁可能来自评价指标本身。<sup>[[16]](#ref-emergence-debate)</sup><sup>[[17]](#ref-chatgpt-launch)</sup>
 
+到 2026 年，这种变化已经有了更具体的工程案例。OpenAI 展示的 **GPT-6 Astra** 可以在 KiCad 中根据电路原理图进行 PCB 布局布线，也能操作图形界面完成网站前端测试。<sup>[[18]](#ref-astra-capabilities)</sup> Anthropic 公布的 **Claude Opus 5.5** 早期测试里，有人借助它在一天内完成约 **68 万行代码迁移**、在三小时内审计并修复约 **20 万行代码**；另一次内部测试将 HAProxy 从 C 迁移到 Rust，重写版本通过了几乎全部原项目的回归测试。<sup>[[19]](#ref-opus55-capabilities)</sup> 这些仍是厂商演示或特定测试，不能等同于普遍可靠的无人值守能力；但它们让「可用性门槛」有了具体含义。
+
 这就构成了一种有趣的不对称：系统为了扩大计算规模付出的代价，可能随着规模增加而变大；模型跨过任务门槛产生的收益，却未必按相同的比例变化。两者都需要衡量，不能互相替代。
 
 这些工作也改变了“更多算力拿来做什么”的答案。新增的 GPU 可以用来缩短原来那次训练，也可以承载更大的模型和数据。后一种选择不会让 wall-clock time 明显下降，却能完成过去做不到的工作。并行计算很早就为这两种目标起了不同的名字。
@@ -278,3 +280,5 @@ ML 不断给我们扩大模型、数据和算力的理由，系统规模也会�
 15. <span id="ref-metr-horizon"></span>METR，*Time Horizon 1.1*，2026-01-29。[更新说明](https://metr.org/blog/2026-1-29-time-horizon-1-1/)；[任务时长指标与方法](https://metr.org/time-horizons/)。新评估套件中，2023 年以来前沿模型 50% 成功率任务时长的拟合翻倍周期约 131 天；按 $2^{365/131}$ 折算的一年约 $6.9\times$ 是**趋势换算值**。任务主要为软件工程、ML 和网络安全，不能据此外推全部智能表现。
 16. <span id="ref-emergence-debate"></span>Jason Wei et al.，*Emergent Abilities of Large Language Models*，TMLR，2022。[论文](https://arxiv.org/abs/2206.07682)；Rylan Schaeffer et al.，*Are Emergent Abilities of Large Language Models a Mirage?*，NeurIPS，2023。[论文](https://papers.neurips.cc/paper_files/paper/2023/hash/adc98a266f45005c403b8311ca7e8bd7-Abstract-Conference.html)。前者讨论规模增加时观察到的任务能力跃迁，后者指出部分跳变可能来自评价指标，并不必然说明模型内部出现相变。
 17. <span id="ref-chatgpt-launch"></span>OpenAI，*Introducing ChatGPT*，2022-11-30。[官方介绍](https://openai.com/index/chatgpt/)。介绍了 GPT-3.5 系列基础、监督微调、RLHF 与对话交互方式。
+18. <span id="ref-astra-capabilities"></span>OpenAI，*GPT-6 Astra: A New Generation of Intelligence*，2026-09-03。[发布介绍与演示](https://openai.com/index/gpt-6-astra/)。包括在 KiCad 中进行 PCB 布局布线、前端质量检查和复杂的计算机操作工作流；这些是公开演示和评测案例。
+19. <span id="ref-opus55-capabilities"></span>Anthropic，*Introducing Claude Opus 5.5*，2026-09-22。[发布介绍与测试案例](https://www.anthropic.com/claude-opus-5-5)。包括早期测试者的大规模代码迁移与审计、HAProxy 的 C-to-Rust 重写实验；测试条件不等同于一般生产部署。
