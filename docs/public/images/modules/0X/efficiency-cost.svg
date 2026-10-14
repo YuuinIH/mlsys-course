@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="520" viewBox="0 0 1080 520" role="img" aria-labelledby="title desc">
+<title id="title">扩展效率与相同工作量下 GPU 租用成本的关系</title><desc id="desc">在固定任务、同款GPU与同一单价下，归一化租用成本等于扩展效率的倒数。100%效率成本1倍，80%效率1.25倍，50%效率2倍。</desc>
+<defs><style>
+text {font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#233047}
+.h1{font-size:25px;font-weight:700}.sub{font-size:14px;fill:#5c6b80}.label{font-size:15px;font-weight:600}
+.small{font-size:12.5px;fill:#66768a}.big{font-size:20px;font-weight:700}
+.panel{fill:#f6f9fe;stroke:#dce6f4;stroke-width:1.4}.grid{stroke:#dce3ee;stroke-width:1}
+.axis{stroke:#7b8ca2;stroke-width:1.5}.dashed{stroke-dasharray:6 7}.blue{stroke:#4275c8;fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.gold{stroke:#dc972b;fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.green{stroke:#268f79;fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.violet{stroke:#895bc5;fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+
+@media(prefers-color-scheme:dark){
+text{fill:#e9eef7}.sub,.small{fill:#b7c4d6}.panel{fill:#1d2939;stroke:#43516a}
+.grid{stroke:#3e4a5c}.axis{stroke:#9aabc0}
+.blue{stroke:#82aaff}.gold{stroke:#f2b85a}.green{stroke:#76ceb4}.violet{stroke:#c39ced}
+}
+</style></defs>
+<text x="44" y="48" class="h1">扩展效率下降，完成同一任务的 GPU-hours 上升</text>
+<text x="44" y="76" class="sub">固定训练工作量、同型号 GPU、相同每卡每小时单价：相对租用成本 = 1 / E(N)</text>
+<rect class="panel" x="42" y="98" width="994" height="364" rx="20"/>
+<line x1="130" y1="420" x2="895" y2="420" class="grid"/><text x="117" y="425" class="small" text-anchor="end">1.0×</text><line x1="130" y1="320" x2="895" y2="320" class="grid"/><text x="117" y="325" class="small" text-anchor="end">1.5×</text><line x1="130" y1="220" x2="895" y2="220" class="grid"/><text x="117" y="225" class="small" text-anchor="end">2.0×</text><line x1="130" y1="120" x2="895" y2="120" class="grid"/><text x="117" y="125" class="small" text-anchor="end">2.5×</text>
+<line x1="130" y1="420" x2="130" y2="428" class="axis"/><text x="130" y="450" class="small" text-anchor="middle">50%</text><line x1="283" y1="420" x2="283" y2="428" class="axis"/><text x="283" y="450" class="small" text-anchor="middle">60%</text><line x1="435.99999999999994" y1="420" x2="435.99999999999994" y2="428" class="axis"/><text x="435.99999999999994" y="450" class="small" text-anchor="middle">70%</text><line x1="589" y1="420" x2="589" y2="428" class="axis"/><text x="589" y="450" class="small" text-anchor="middle">80%</text><line x1="742" y1="420" x2="742" y2="428" class="axis"/><text x="742" y="450" class="small" text-anchor="middle">90%</text><line x1="895" y1="420" x2="895" y2="428" class="axis"/><text x="895" y="450" class="small" text-anchor="middle">100%</text>
+<line x1="130" y1="118" x2="130" y2="420" class="axis"/><line x1="130" y1="420" x2="895" y2="420" class="axis"/>
+<text x="135" y="124" class="small">相对 GPU-hours / 成本</text>
+<text x="517" y="490" class="sub" text-anchor="middle">Scaling efficiency · E(N)（向右更高）</text>
+<path class="blue" d="M130.0 220.0 L140.9 225.6 L151.9 231.1 L162.8 236.4 L173.7 241.6 L184.6 246.7 L195.6 251.6 L206.5 256.4 L217.4 261.0 L228.4 265.6 L239.3 270.0 L250.2 274.3 L261.1 278.5 L272.1 282.7 L283.0 286.7 L293.9 290.6 L304.9 294.4 L315.8 298.2 L326.7 301.8 L337.6 305.4 L348.6 308.9 L359.5 312.3 L370.4 315.7 L381.4 318.9 L392.3 322.1 L403.2 325.3 L414.1 328.3 L425.1 331.3 L436.0 334.3 L446.9 337.2 L457.9 340.0 L468.8 342.8 L479.7 345.5 L490.6 348.2 L501.6 350.8 L512.5 353.3 L523.4 355.8 L534.4 358.3 L545.3 360.7 L556.2 363.1 L567.1 365.5 L578.1 367.7 L589.0 370.0 L599.9 372.2 L610.9 374.4 L621.8 376.5 L632.7 378.6 L643.6 380.7 L654.6 382.7 L665.5 384.7 L676.4 386.7 L687.4 388.6 L698.3 390.5 L709.2 392.4 L720.1 394.2 L731.1 396.0 L742.0 397.8 L752.9 399.5 L763.9 401.3 L774.8 402.9 L785.7 404.6 L796.6 406.3 L807.6 407.9 L818.5 409.5 L829.4 411.0 L840.4 412.6 L851.3 414.1 L862.2 415.6 L873.1 417.1 L884.1 418.6 L895.0 420.0"/>
+<circle cx="130" cy="220" r="7" fill="#4275c8" stroke="#fff" stroke-width="2"/><text x="165" y="202" class="label">50% → 2.00×</text><circle cx="589" cy="370" r="7" fill="#4275c8" stroke="#fff" stroke-width="2"/><text x="545" y="313" class="label">80% → 1.25×</text><circle cx="895" cy="420" r="7" fill="#4275c8" stroke="#fff" stroke-width="2"/><text x="775" y="384" class="label">100% → 1.00×</text>
+<text x="45" y="514" class="small">仅计算 GPU 租用成本；不包含网络、存储、故障恢复或时间价值。并行也可能为了满足工期而有必要。</text>
+</svg>

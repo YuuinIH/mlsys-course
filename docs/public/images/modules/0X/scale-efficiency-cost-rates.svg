@@ -1,97 +1,40 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
-  <title id="title">能力、训练计算量、计算效率与训练成本的增长速度</title>
-  <desc id="desc">左图把训练计算量、预训练计算效率和训练成本都从一归一化，按公开趋势率画出一年后的倍率，分别约为五倍、三倍和三点五倍。右图单独展示能力代理指标 ECI，每年提高约十四点。由于 ECI 不是倍数，能力曲线不能和左图的倍率直接相除。</desc>
-  <defs>
-    <style>
-      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; fill: #182230; }
-      .title { font-size: 22px; font-weight: 600; text-anchor: middle; }
-      .subtitle { font-size: 14px; fill: #5e6b7a; text-anchor: middle; }
-      .panel-title { font-size: 17px; font-weight: 600; text-anchor: middle; }
-      .axis { stroke: #7c8795; stroke-width: 1.5; }
-      .grid { stroke: #d8dde4; stroke-width: 1; }
-      .tick-label { font-size: 12px; fill: #5e6b7a; }
-      .axis-title { font-size: 13px; fill: #5e6b7a; text-anchor: middle; }
-      .compute { fill: none; stroke: #4d77c7; stroke-width: 4; }
-      .efficiency { fill: none; stroke: #4a8c67; stroke-width: 4; }
-      .cost { fill: none; stroke: #d38a18; stroke-width: 4; }
-      .capability { fill: none; stroke: #8b63bd; stroke-width: 4; }
-      .compute-dot { fill: #4d77c7; }
-      .efficiency-dot { fill: #4a8c67; }
-      .cost-dot { fill: #d38a18; }
-      .capability-dot { fill: #8b63bd; }
-      .direct-label { font-size: 14px; font-weight: 600; }
-      .note { font-size: 13px; fill: #5e6b7a; }
-      .warning { fill: #f6f2fb; stroke: #8b63bd; stroke-width: 1.5; }
-      @media (prefers-color-scheme: dark) {
-        text { fill: #e9eef5; }
-        .subtitle, .tick-label, .axis-title, .note { fill: #bac4d1; }
-        .axis { stroke: #9aa8ba; }
-        .grid { stroke: #465363; }
-        .compute { stroke: #7ca6ef; }.compute-dot { fill: #7ca6ef; }
-        .efficiency { stroke: #72b48e; }.efficiency-dot { fill: #72b48e; }
-        .cost { stroke: #e3a84c; }.cost-dot { fill: #e3a84c; }
-        .capability { stroke: #b99ae2; }.capability-dot { fill: #b99ae2; }
-        .warning { fill: #302540; stroke: #b99ae2; }
-      }
-    </style>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="605" viewBox="0 0 1120 605" role="img" aria-labelledby="title desc">
+<title id="title">训练投入、效率、成本与能力指标的年度变化（双坐标轴示意）</title><desc id="desc">同一绘图区的左轴是从1倍归一化的训练计算量5倍、计算效率3倍、训练成本3.5倍。右轴是能力指标一年提高14 ECI点，画成线性变化。两轴量纲不同，不能互相直接比较。</desc>
+<defs><style>
+text {font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#233047}
+.h1{font-size:25px;font-weight:700}.sub{font-size:14px;fill:#5c6b80}.label{font-size:15px;font-weight:600}
+.small{font-size:12.5px;fill:#66768a}.big{font-size:20px;font-weight:700}
+.panel{fill:#f6f9fe;stroke:#dce6f4;stroke-width:1.4}.grid{stroke:#dce3ee;stroke-width:1}
+.axis{stroke:#7b8ca2;stroke-width:1.5}.dashed{stroke-dasharray:6 7}.blue{stroke:#4275c8;fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.gold{stroke:#dc972b;fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.green{stroke:#268f79;fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.violet{stroke:#895bc5;fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
 
-  <text x="480" y="36" class="title">四条曲线的斜率不同，单位也不同</text>
-  <text x="480" y="62" class="subtitle">公开趋势率的数量级比较；时间区间与统计口径见正文和图注</text>
-
-  <text x="335" y="102" class="panel-title">投入、效率和成本：一年倍率</text>
-  <text x="770" y="102" class="panel-title">能力：代理指标的年变化</text>
-
-  <g aria-label="训练计算量、预训练计算效率和训练成本的一年倍率">
-    <line x1="88" y1="420" x2="590" y2="420" class="axis"/>
-    <line x1="88" y1="120" x2="88" y2="420" class="axis"/>
-    <line x1="88" y1="420" x2="590" y2="420" class="grid"/>
-    <line x1="88" y1="345" x2="590" y2="345" class="grid"/>
-    <line x1="88" y1="270" x2="590" y2="270" class="grid"/>
-    <line x1="88" y1="195" x2="590" y2="195" class="grid"/>
-    <line x1="88" y1="120" x2="590" y2="120" class="grid"/>
-    <text x="72" y="424" class="tick-label" text-anchor="end">1×</text>
-    <text x="72" y="349" class="tick-label" text-anchor="end">2×</text>
-    <text x="72" y="274" class="tick-label" text-anchor="end">3×</text>
-    <text x="72" y="199" class="tick-label" text-anchor="end">4×</text>
-    <text x="72" y="124" class="tick-label" text-anchor="end">5×</text>
-    <text x="88" y="444" class="tick-label" text-anchor="middle">起点</text>
-    <text x="590" y="444" class="tick-label" text-anchor="middle">一年后</text>
-    <text x="339" y="470" class="axis-title">经过时间</text>
-
-    <polyline points="88,420 214,383 339,327 465,245 590,120" class="compute"/>
-    <circle cx="590" cy="120" r="6" class="compute-dot"/>
-    <text x="574" y="111" class="direct-label" text-anchor="end">训练计算量 5×</text>
-
-    <polyline points="88,420 214,396 339,365 465,324 590,270" class="efficiency"/>
-    <circle cx="590" cy="270" r="6" class="efficiency-dot"/>
-    <text x="574" y="291" class="direct-label" text-anchor="end">预训练计算效率 3×</text>
-
-    <polyline points="88,420 214,392 339,355 465,304 590,233" class="cost"/>
-    <circle cx="590" cy="233" r="6" class="cost-dot"/>
-    <text x="574" y="224" class="direct-label" text-anchor="end">训练成本 3.5×</text>
-  </g>
-
-  <g aria-label="Epoch Capabilities Index 每年提高十四点">
-    <line x1="680" y1="420" x2="900" y2="420" class="axis"/>
-    <line x1="680" y1="120" x2="680" y2="420" class="axis"/>
-    <line x1="680" y1="420" x2="900" y2="420" class="grid"/>
-    <line x1="680" y1="270" x2="900" y2="270" class="grid"/>
-    <line x1="680" y1="120" x2="900" y2="120" class="grid"/>
-    <text x="666" y="424" class="tick-label" text-anchor="end">+0</text>
-    <text x="666" y="274" class="tick-label" text-anchor="end">+14</text>
-    <text x="666" y="124" class="tick-label" text-anchor="end">+28</text>
-    <text x="680" y="444" class="tick-label" text-anchor="middle">起点</text>
-    <text x="790" y="444" class="tick-label" text-anchor="middle">一年</text>
-    <text x="900" y="444" class="tick-label" text-anchor="middle">两年</text>
-    <text x="790" y="470" class="axis-title">推理模型前沿出现后的时间</text>
-
-    <polyline points="680,420 790,270 900,120" class="capability"/>
-    <circle cx="790" cy="270" r="6" class="capability-dot"/>
-    <circle cx="900" cy="120" r="6" class="capability-dot"/>
-    <text x="888" y="110" class="direct-label" text-anchor="end">约 +14 ECI / 年</text>
-  </g>
-
-  <rect x="158" y="500" width="644" height="38" rx="19" class="warning"/>
-  <text x="480" y="524" class="note" text-anchor="middle">ECI 是综合基准代理指标，不是“智能提高 14%”；右图不能与左图的倍率直接相除</text>
+@media(prefers-color-scheme:dark){
+text{fill:#e9eef7}.sub,.small{fill:#b7c4d6}.panel{fill:#1d2939;stroke:#43516a}
+.grid{stroke:#3e4a5c}.axis{stroke:#9aabc0}
+.blue{stroke:#82aaff}.gold{stroke:#f2b85a}.green{stroke:#76ceb4}.violet{stroke:#c39ced}
+}
+</style></defs>
+<text x="45" y="47" class="h1">AI 的四种“增长”不在同一条刻度上</text>
+<text x="45" y="75" class="sub">用一幅双轴示意图叠放不同趋势：增长倍率与 ECI 年增量分别读取左右坐标轴。</text>
+<rect class="panel" x="43" y="96" width="1034" height="440" rx="22"/>
+<text x="125" y="133" class="label">左轴 · 归一化增长倍率</text><text x="850" y="133" class="label" text-anchor="end">右轴 · ECI 累计增量（点）</text>
+<line x1="126" y1="469" x2="850" y2="469" class="grid"/><text x="111" y="474" class="small" text-anchor="end">1×</text><line x1="126" y1="390.5" x2="850" y2="390.5" class="grid"/><text x="111" y="395.5" class="small" text-anchor="end">2×</text><line x1="126" y1="312" x2="850" y2="312" class="grid"/><text x="111" y="317" class="small" text-anchor="end">3×</text><line x1="126" y1="233.5" x2="850" y2="233.5" class="grid"/><text x="111" y="238.5" class="small" text-anchor="end">4×</text><line x1="126" y1="155" x2="850" y2="155" class="grid"/><text x="111" y="160" class="small" text-anchor="end">5×</text>
+<text x="864" y="474" class="small">+0</text><text x="864" y="395.5" class="small">+5</text><text x="864" y="317" class="small">+10</text><text x="864" y="238.5" class="small">+15</text><text x="864" y="160" class="small">+20</text>
+<line x1="126" y1="155" x2="126" y2="469" class="axis"/><line x1="850" y1="155" x2="850" y2="469" class="axis"/><line x1="126" y1="469" x2="850" y2="469" class="axis"/>
+<text x="126" y="492" class="small" text-anchor="middle">起点</text><text x="307" y="492" class="small" text-anchor="middle">3 个月</text><text x="488" y="492" class="small" text-anchor="middle">6 个月</text><text x="669" y="492" class="small" text-anchor="middle">9 个月</text><text x="850" y="492" class="small" text-anchor="middle">一年后</text>
+<path d="M126.0 469.0 L142.5 466.1 L158.9 463.0 L175.4 459.9 L191.8 456.6 L208.3 453.2 L224.7 449.7 L241.2 446.1 L257.6 442.3 L274.1 438.4 L290.5 434.3 L307.0 430.1 L323.5 425.7 L339.9 421.2 L356.4 416.5 L372.8 411.6 L389.3 406.6 L405.7 401.3 L422.2 395.9 L438.6 390.2 L455.1 384.4 L471.5 378.3 L488.0 372.0 L504.5 365.4 L520.9 358.6 L537.4 351.6 L553.8 344.3 L570.3 336.7 L586.7 328.9 L603.2 320.7 L619.6 312.3 L636.1 303.5 L652.5 294.4 L669.0 285.0 L685.5 275.2 L701.9 265.1 L718.4 254.6 L734.8 243.7 L751.3 232.3 L767.7 220.6 L784.2 208.4 L800.6 195.8 L817.1 182.7 L833.5 169.1 L850.0 155.0" class="blue"/>
+<path d="M126.0 469.0 L142.5 466.7 L158.9 464.4 L175.4 462.0 L191.8 459.5 L208.3 457.0 L224.7 454.4 L241.2 451.7 L257.6 448.9 L274.1 446.1 L290.5 443.1 L307.0 440.1 L323.5 437.0 L339.9 433.8 L356.4 430.6 L372.8 427.2 L389.3 423.7 L405.7 420.1 L422.2 416.4 L438.6 412.7 L455.1 408.8 L471.5 404.8 L488.0 400.6 L504.5 396.4 L520.9 392.0 L537.4 387.5 L553.8 382.9 L570.3 378.2 L586.7 373.3 L603.2 368.2 L619.6 363.1 L636.1 357.7 L652.5 352.3 L669.0 346.6 L685.5 340.8 L701.9 334.9 L718.4 328.7 L734.8 322.4 L751.3 315.9 L767.7 309.2 L784.2 302.3 L800.6 295.2 L817.1 288.0 L833.5 280.5 L850.0 272.8" class="gold"/>
+<path d="M126.0 469.0 L142.5 467.0 L158.9 465.0 L175.4 462.9 L191.8 460.8 L208.3 458.6 L224.7 456.3 L241.2 454.0 L257.6 451.6 L274.1 449.2 L290.5 446.7 L307.0 444.2 L323.5 441.6 L339.9 438.9 L356.4 436.2 L372.8 433.3 L389.3 430.5 L405.7 427.5 L422.2 424.5 L438.6 421.3 L455.1 418.2 L471.5 414.9 L488.0 411.5 L504.5 408.1 L520.9 404.6 L537.4 401.0 L553.8 397.3 L570.3 393.5 L586.7 389.6 L603.2 385.6 L619.6 381.5 L636.1 377.3 L652.5 373.0 L669.0 368.6 L685.5 364.0 L701.9 359.4 L718.4 354.6 L734.8 349.8 L751.3 344.8 L767.7 339.6 L784.2 334.4 L800.6 329.0 L817.1 323.5 L833.5 317.8 L850.0 312.0" class="green"/>
+<path d="M126 469 L850 249.2" class="violet" stroke-dasharray="9 6"/>
+<circle cx="850" cy="155" r="6.2" fill="#4275c8" stroke="#fff" stroke-width="1.8"/><text x="902" y="160" class="label">5×</text><circle cx="850" cy="249.20000000000002" r="6.2" fill="#895bc5" stroke="#fff" stroke-width="1.8"/><text x="902" y="254.20000000000002" class="label">+14 pt</text><circle cx="850" cy="272.75" r="6.2" fill="#dc972b" stroke="#fff" stroke-width="1.8"/><text x="902" y="277.75" class="label">3.5×</text><circle cx="850" cy="312" r="6.2" fill="#268f79" stroke="#fff" stroke-width="1.8"/><text x="902" y="317" class="label">3×</text>
+<g>
+<line x1="136" y1="516" x2="165" y2="516" class="blue"/><text x="174" y="521" class="small">训练计算量</text>
+<line x1="330" y1="516" x2="358" y2="516" class="gold"/><text x="367" y="521" class="small">训练成本</text>
+<line x1="480" y1="516" x2="508" y2="516" class="green"/><text x="517" y="521" class="small">计算效率</text>
+<line x1="662" y1="516" x2="691" y2="516" class="violet" stroke-dasharray="9 6"/><text x="699" y="521" class="small">ECI（右轴）</text>
+</g>
+<text x="45" y="567" class="sub">仅根据引用资料中的近似趋势率绘制；各项样本与时间窗口不同，并非同一组实验或未来预测。</text>
+<text x="45" y="591" class="small">ECI 的“+14 点/年”不是“能力增长 14%”，双轴位置不能用于比较四种指标的绝对增速。</text>
 </svg>
