@@ -2,7 +2,7 @@
 
 这里先放一版课程参考资料入口。它不是完整 bibliography，也不是要求大家按顺序读完。
 
-使用原则：先按问题找资料，再决定要不要读。每个模块正文都要在末尾维护自己的“脚注与参考索引”。
+使用原则：先按问题找资料，再决定要不要读。专题文章根据论证需要引用原始资料，并交代资料支持什么结论；不强制统一脚注格式。
 
 ## 课程与教材
 
@@ -28,7 +28,7 @@
 
 ## 论文与系统文章候选
 
-这些资料后面需要按模块拆进脚注索引，目前先集中放在这里。
+这些是候选阅读材料，不等于已经纳入正式文章；有合适的系统问题时再使用。
 
 - ZeRO：理解大模型训练中的 optimizer state、gradient、parameter 分片。
 - FSDP：理解 PyTorch 生态里的参数分片和显存优化。
@@ -39,7 +39,7 @@
 
 ## 显存、并行与拓扑
 
-这一组资料服务于“显存不够装怎么办 -> 多卡 -> 多机 -> 网络拓扑”的课程线。
+这一组资料服务于显存、并行和网络拓扑问题，不意味着必须按照固定顺序学习。
 
 - [MLSysBook: AI Engineering at Scale Syllabus](https://mlsysbook.ai/instructors/scale-syllabus.html)：适合看 compute infrastructure、network fabrics、distributed training、collective communication、inference at scale 在课程地图里的位置。
 - [MLSysBook: Distributed Training](https://mlsysbook.ai/vol2/distributed_training/distributed_training.html)：适合从 memory exhaustion 引出 DP、TP、PP、ZeRO/FSDP、expert parallel 和 hybrid parallelism。
@@ -56,15 +56,15 @@
 
 后续整理时，每条论文需要补全标题、作者、会议、年份、链接，以及它回答哪个课程问题。
 
-## 模块引用要求
+## 文章引用建议
 
-每个模块至少维护这些信息：
+引用资料时，建议记录这些信息：
 
 ```text
 资料标题
 链接
 适合回答的问题
-和本章实验或现象的关系
+和文章观点、证据或实验的关系
 ```
 
 不要只贴链接。脚注索引的目标是帮助读者知道“为什么要读这条资料”。

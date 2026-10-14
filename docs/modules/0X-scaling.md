@@ -1,6 +1,14 @@
-# X. 规模效应：从单卡到多卡，从单机到多机
+---
+level: L2
+status: draft
+topics:
+  - training-systems
+  - cost-and-tradeoffs
+---
 
-> 状态：初稿。Part 0 · Systems Thinking for ML。本章先建立对规模的直觉。后续章节再讨论并行训练、通信、调度与恢复机制。
+# 规模效应：从单卡到多卡，从单机到多机
+
+> **L2 · Engineering** · **初稿** · 训练系统 / 成本与系统决策。本文从性能扩展的历史案例出发，建立规模、效率与成本的直觉。
 
 <!-- 用词约定：“四路泰坦”是社区 meme 的固定写法；只有说明具体型号或测试数据时才使用 Titan X 等完整型号。 -->
 
@@ -22,7 +30,7 @@ SLI 名字里的 Scalable，意思是系统可以随着资源增加而扩展。�
 
 第二张卡把 44 FPS 提高到 75 FPS，提升很明显。第三张卡又花掉一张 Titan X 的钱，只换来 14 FPS。换一款游戏，结果还会不同。同一组测试中，《地铁：最后的曙光》（Metro: Last Light）甚至没有识别第三张 GPU。评测者原本准备继续看三卡、四卡，先遇到了 CPU 瓶颈、驱动支持和游戏兼容性。卡数增加了，性能没有按相同倍数增长。
 
-## X.1 买了几份硬件，换回了几份性能
+## 买了几份硬件，换回了几份性能
 
 假设同一个任务使用一张 GPU 需要时间 $T_1$，使用 $N$ 张 GPU 需要时间 $T_N$。加速比（speedup）写作：
 
@@ -44,7 +52,7 @@ $$
 
 “使用了 1024 张 GPU”还不足以说明系统扩展得好。我们还要知道这些卡有多少时间在完成有效计算，有多少时间花在移动数据和相互等待上。
 
-## X.2 一点不能并行的工作，会怎样长大
+## 一点不能并行的工作，会怎样长大
 
 1967 年，Gene Amdahl 讨论大型计算机时提出了一个后来被称为 Amdahl 定律的观察。假设一个任务中有比例 $p$ 的工作可以理想地并行，剩下的部分仍然要串行执行，那么：<sup>[[3]](#ref-amdahl)</sup>
 
@@ -66,7 +74,7 @@ $$
 
 卡数增加以后，$T_{\text{compute}}$ 可能缩短，其他几项却未必缩短。某个小开销在一张卡上很难察觉，到了几百张卡上，可能让大量设备一起等待。
 
-## X.3 GPU 进入深度学习
+## GPU 进入深度学习
 
 SLI 后来逐渐退出了主流游戏电脑，多 GPU 计算却在另一个领域迅速变得重要。
 
@@ -80,7 +88,7 @@ AlexNet 使用的是面向神经网络的双 GPU 拆分，workload 和软件路�
 
 这些边界都会把系统推向更多 GPU。可我们已经从 SLI 见过，每多一张卡，扩展效率都可能再损失一些。机器学习为什么还在继续增加算力？
 
-## X.4 2020 年以后，很难再对规模保持克制
+## 2020 年以后，很难再对规模保持克制
 
 系统侧的扩展效率会下降，机器学习却一直在奖励更大的模型、更多的数据和更长的训练。
 
@@ -88,7 +96,7 @@ AlexNet 使用的是面向神经网络的双 GPU 拆分，workload 和软件路�
 
 ![Kaplan 等人的论文图 1：语言模型测试损失分别随训练计算量、数据量和参数量增加而平滑下降](/images/modules/0X/scaling-laws-figure-1.png)
 
-*图 X-1：Kaplan 等人的论文图 1。三幅图都使用对数横轴；点和拟合线在很大的尺度范围内仍然贴得很近。纵轴是测试损失，越低越好。*
+*图 1：Kaplan 等人的论文图 1。三幅图都使用对数横轴；点和拟合线在很大的尺度范围内仍然贴得很近。纵轴是测试损失，越低越好。*
 
 这张图当时最有诱惑力的地方，是曲线没有很快撞上一堵墙。增加参数、数据或训练计算量，测试损失仍在下降。幂律也意味着边际收益会变小：为了再换来一点下降，投入往往要按倍数增加。
 
@@ -96,13 +104,13 @@ AlexNet 使用的是面向神经网络的双 GPU 拆分，workload 和软件路�
 
 ![GPT-3 论文图 1.2：三种模型在一个字符操作任务上的准确率随上下文示例数量变化](/images/modules/0X/gpt3-in-context-scaling.png)
 
-*图 X-2：GPT-3 论文图 1.2。横轴是上下文里提供的示例数量，纵轴是一个字符操作任务的准确率。1750 亿参数模型从示例中获益明显，13 亿参数模型几乎没有学会这个任务。这只是一项具体实验，不能当作通用的“智能曲线”。*
+*图 2：GPT-3 论文图 1.2。横轴是上下文里提供的示例数量，纵轴是一个字符操作任务的准确率。1750 亿参数模型从示例中获益明显，13 亿参数模型几乎没有学会这个任务。这只是一项具体实验，不能当作通用的“智能曲线”。*
 
 这些结果给继续增加模型、数据和训练计算提供了实验依据。游戏玩家那里有些奢侈的“再加一张卡”，在机器学习研究里可以换来明确的收益。研究者开始用更大的机器训练以前放不下、也算不完的模型。
 
 ![GPT-3 论文图 2.2：BERT、T5 和 GPT-3 系列模型训练计算量的对数柱状图](/images/modules/0X/gpt3-training-compute.png)
 
-*图 X-3：GPT-3 论文图 2.2。纵轴是训练使用的 petaflop/s-days，并采用对数刻度。模型系列向右变大时，训练计算量也跨过多个数量级。*
+*图 3：GPT-3 论文图 2.2。纵轴是训练使用的 petaflop/s-days，并采用对数刻度。模型系列向右变大时，训练计算量也跨过多个数量级。*
 
 这里有两种 scaling，名字相同，方向不同：
 
@@ -115,7 +123,7 @@ AlexNet 使用的是面向神经网络的双 GPU 拆分，workload 和软件路�
 
 这些工作也改变了“更多算力拿来做什么”的答案。新增的 GPU 可以用来缩短原来那次训练，也可以承载更大的模型和数据。后一种选择不会让 wall-clock time 明显下降，却能完成过去做不到的工作。并行计算很早就为这两种目标起了不同的名字。
 
-## X.5 同一道题做快一点，还是去做更大的题
+## 同一道题做快一点，还是去做更大的题
 
 并行计算通常区分 strong scaling 和 weak scaling：<sup>[[7]](#ref-llnl-scaling)</sup>
 
@@ -134,7 +142,7 @@ GPT-3 与标准 weak-scaling 实验的控制条件不同。它的模型规模、
 
 此时只看 speedup 很容易误判。更多硬件的价值，有时表现为更快，有时表现为原来做不到的规模。
 
-## X.6 从一张卡走出一台机器
+## 从一张卡走出一台机器
 
 单卡程序的世界相对安静。计算和显存都在一张设备上，失败通常也只影响一个进程。
 
@@ -169,9 +177,9 @@ thousands of GPUs
 - 一台机器装不下时，网络会成为系统的一部分；
 - 参与的设备越多，遇到故障的机会越多。
 
-本章先记下这些问题出现的顺序，后面的课程再讨论具体解法。
+这里先记录问题出现的顺序。具体的并行策略、通信与调度机制可以在相关专题中继续探索。
 
-## X.7 四条曲线不会按同一个倍率增长
+## 四条曲线不会按同一个倍率增长
 
 谈到规模时，人们经常把四件事揉在一起：模型能力提高了多少，训练投入扩大了多少，算法和软件省下了多少计算，最后又花了多少钱。它们之间有关联，却没有一条可以直接换算的统一刻度。
 
@@ -179,7 +187,7 @@ Epoch AI 在 2026 年汇总的趋势中，前沿语言模型的训练计算量�
 
 ![将训练计算量、预训练计算效率和训练成本归一化后的一年增长曲线，以及单独绘制的 ECI 能力代理曲线](/images/modules/0X/scale-efficiency-cost-rates.svg)
 
-*图 X-4：把公开趋势率放到一起看。左图把起点归一化为 1，展示训练计算量、预训练计算效率和训练成本按各自趋势率增长一年后的倍率。右图单独画 ECI，因为 ECI 点数不是倍数。各项统计的时间区间和样本口径不同，这张图比较的是斜率的数量级，并非同一项实验中的四个变量。*
+*图 4：把公开趋势率放到一起看。左图把起点归一化为 1，展示训练计算量、预训练计算效率和训练成本按各自趋势率增长一年后的倍率。右图单独画 ECI，因为 ECI 点数不是倍数。各项统计的时间区间和样本口径不同，这张图比较的是斜率的数量级，并非同一项实验中的四个变量。*
 
 “计算效率提高 3 倍”的意思，是达到同一目标所需的计算量降到原来的约三分之一。早一些的研究用 ImageNet 上达到 AlexNet 水平作为固定目标，估计 2012 到 2019 年间所需计算量减少了 44 倍，相当于算法效率约每 16 个月翻一倍。<sup>[[10]](#ref-algorithmic-efficiency)</sup> 这种比较必须固定目标。模型和任务如果同时变化，就无法判断究竟省下了多少计算。
 
@@ -189,7 +197,7 @@ ECI 是一个经过拟合的综合指标，14 个 ECI 点不等于“智能提�
 
 于是会出现一个看似矛盾的现象：算法和软件一直在省计算，整个行业花在训练上的计算量和钱却还在增加。实验室把省下来的计算又用在了更大的问题上。
 
-## X.8 对规模保留一个问号
+## 对规模保留一个问号
 
 从四路泰坦到大模型训练，硬件数量已经跨过几个数量级，最初的问题没有变化：投入 $N$ 份资源，最后得到多少有用的工作？
 
@@ -203,8 +211,8 @@ ML 不断给我们扩大模型、数据和算力的理由，系统规模也会�
 2. <span id="ref-titan-x-sli"></span>Maximum PC Staff，*Nvidia GeForce GTX Titan X SLI Benchmarks*，PC Gamer，2015。[测试与原始表格](https://www.pcgamer.com/nvidia-geforce-gtx-titan-x-sli-benchmarks-2015/)；Dave James，*Benchmarks: GTX Titan X in SLI*，PC Gamer，2015。[三卡与四卡讨论](https://www.pcgamer.com/benchmarks-gtx-titan-x-in-sli/)。前者给出单卡、双卡和三卡在 4K 游戏中的帧率，并记录不同游戏的扩展差异与第三张 GPU 未被识别的情况；后者讨论继续增加到三卡和四卡后的边际收益。
 3. <span id="ref-amdahl"></span>Gene M. Amdahl，*Validity of the Single Processor Approach to Achieving Large Scale Computing Capabilities*，AFIPS Spring Joint Computer Conference，1967。[ACM DOI](https://doi.org/10.1145/1465482.1465560)。
 4. <span id="ref-alexnet"></span>Alex Krizhevsky、Ilya Sutskever、Geoffrey E. Hinton，*ImageNet Classification with Deep Convolutional Neural Networks*，NeurIPS，2012。[论文页面](https://proceedings.neurips.cc/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html)。
-5. <span id="ref-scaling-laws"></span>Jared Kaplan et al.，*Scaling Laws for Neural Language Models*，2020。[OpenAI 论文介绍](https://openai.com/index/scaling-laws-for-neural-language-models/)；[arXiv:2001.08361](https://arxiv.org/abs/2001.08361)。图 X-1 截自论文图 1。
-6. <span id="ref-gpt3"></span>Tom B. Brown et al.，*Language Models are Few-Shot Learners*，2020。[arXiv:2005.14165](https://arxiv.org/abs/2005.14165)。图 X-2 与图 X-3 分别截自论文图 1.2 和图 2.2。
+5. <span id="ref-scaling-laws"></span>Jared Kaplan et al.，*Scaling Laws for Neural Language Models*，2020。[OpenAI 论文介绍](https://openai.com/index/scaling-laws-for-neural-language-models/)；[arXiv:2001.08361](https://arxiv.org/abs/2001.08361)。图 1 截自论文图 1。
+6. <span id="ref-gpt3"></span>Tom B. Brown et al.，*Language Models are Few-Shot Learners*，2020。[arXiv:2005.14165](https://arxiv.org/abs/2005.14165)。图 2 与图 3 分别截自论文图 1.2 和图 2.2。
 7. <span id="ref-llnl-scaling"></span>Lawrence Livermore National Laboratory，*Introduction to Parallel Computing Tutorial*。[Strong and weak scaling](https://hpc.llnl.gov/documentation/tutorials/introduction-parallel-computing-tutorial)。
 8. <span id="ref-gustafson"></span>John L. Gustafson，*Reevaluating Amdahl's Law*，Communications of the ACM 31(5)，1988。[ACM DOI](https://doi.org/10.1145/42411.42415)。
 9. <span id="ref-epoch-trends"></span>Epoch AI，*Trends in Artificial Intelligence*，2026 年 9 月访问。[趋势汇总](https://epoch.ai/trends)；[Epoch Capabilities Index 说明](https://epoch.ai/eci)。训练计算量、预训练计算效率与训练成本采用该页面给出的前沿语言模型趋势；ECI 是由五十多个基准测试组合出的能力代理指标，其绝对点数没有独立含义。

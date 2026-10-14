@@ -1,27 +1,17 @@
-# MLSys Course 课程设计
+# 课程设计
 
-本课程追踪一个 ML workload 从代码走向生产系统的全过程。站内学习请从[学习地图](/guide/learning-map)开始；仓库根目录的 `COURSE_OUTLINE.md` 保存完整的课程设计、学习目标和章节说明。
+> **从计算机系统的视角，理解现代机器学习如何真正运行。**
 
-> 站内页面避免复制维护第二份完整大纲。以下是课程结构摘要。
+Hello MLSys 不是一本必须从第一章读到最后一章的教材。内容按三个相对独立的层次组织：
 
-## 核心循环
+- [主题地图（Topics）](/topics/)：课程的知识边界，不是强制完成的章节清单。
+- [专题文章（Essays）](/essays/)：独立回答一个 MLSys 问题，按 L1/L2/L3 标注阅读难度。
+- [学习路径（Paths）](/paths/)：从现有文章中选择阅读顺序；当前只维护最小起步路径。
 
-```text
-问题 -> 观察 -> 测量 -> 建立思维模型 -> 理解机制 -> 实验 -> 评估取舍 -> 决策
-```
+我们希望读者辨认 ML 工作负载的资源需求，解释运行机制，建立性能与成本直觉，检验证据，并理解架构取舍的适用边界。
 
-## 七个部分
+课程**不以实现系统为最终目标**。实验、代码、源码阅读、案例分析与推导都是认识知识的手段，只有在确实帮助理解时才引入。
 
-1. **Systems Thinking for ML**：工作负载、测量、瓶颈与性能推理。
-2. **Understanding ML Workloads**：理解计算、内存和 training step 的资源构成。
-3. **From One GPU to Distributed Training**：显存权衡、并行、通信与扩展效率。
-4. **From Training Script to Cluster**：容器、调度、资源管理与故障恢复。
-5. **From Model to Production Service**：延迟、吞吐、排队、KV cache 和服务优化。
-6. **Operating ML Systems**：可观测性、SLO、成本与容量规划。
-7. **Design an ML System**：基于证据做设计并为取舍辩护。
+不做 ML 算法百科、工具安装手册、热点速递，也不强制每篇文章都有 Lab、作业或 Decision Record。现成框架是解释问题的材料，而非目录本身。
 
-## 课程边界
-
-技术不会以孤立工具教程的形式出现。Kubernetes、NCCL、vLLM 或 Prometheus 只有在它们帮助解释或解决具体问题时才进入章节；易变的操作步骤归入 Cookbook，可选的底层细节归入 Deep Dive。
-
-实验可以小，但现象必须具有真实系统的形状：能观察到资源竞争、通信、排队、失败、长尾或成本取舍，并明确说明规模限制。
+完整课程定位、八个主题和 Non-goals 以仓库中的 [COURSE_OUTLINE.md](https://github.com/YuuinIH/mlsys-course/blob/main/COURSE_OUTLINE.md) 为准，本页不维护第二份完整大纲。
