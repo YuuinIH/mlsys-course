@@ -43,7 +43,7 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: 'L1 · 为啥需要 MLSys？', link: '/modules/00-systems-thinking' },
-          { text: 'L2 · 规模效应：从单卡到多机', link: '/modules/0X-scaling' }
+          { text: 'L2 · 规模效应：算力、能力与成本', link: '/modules/0X-scaling' }
         ]
       },
       {
