@@ -144,7 +144,7 @@ $$
 
 ![100 个请求按 TTFT 排序：前 90 个为 0.1 秒，后 10 个为 5 秒；平均值为 0.59 秒，P95 为 5 秒。](/images/essays/serving-tuning/tail-latency-percentiles.svg)
 
-<small>图 2 · 平均值与 P95 描述了同一批请求的不同侧面；数据均为教学示例。</small>
+<small>图 2 · 平均值与 P95 描述了同一批请求的不同侧面。数据为教学示例，柱高不按耗时等比例绘制。</small>
 
 P95 不是 SRE 发明的，它本来就是统计学概念。大型互联网服务的性能监控经常使用百分位数，Google 的 Site Reliability Engineering（SRE，站点可靠性工程）实践也强调过平均延迟掩盖尾部问题的风险。<sup>[[4]](#ref-sre-monitoring)</sup>
 
