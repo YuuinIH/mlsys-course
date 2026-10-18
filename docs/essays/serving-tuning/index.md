@@ -19,13 +19,13 @@ topics: ["推理系统", "性能与测量", "成本与系统决策"]
 
 ## 本章的小节
 
-1. [服务能响应，怎么判断它够不够快？](./01-what-is-fast.md)
-2. [模型明明装得下，显存怎么还是不够？](./02-memory-budget.md)
-3. [一个人用挺快，为什么人一多就卡？](./03-concurrency.md)
-4. [同一段 Prompt，为什么还要反复计算？](./04-prefix-cache.md)
-5. [能不能让模型一次多生成几个 Token？](./05-speculative-decoding.md)
-6. [模型量化以后，就一定又快又省吗？](./06-quantization.md)
-7. [网上的“最优参数”，为什么到我这里就不灵了？](./07-tuning-by-workload.md)
+1. [推理服务性能测量](./01-what-is-fast.md)
+2. [显存预算与模型配置](./02-memory-budget.md)
+3. [并发处理与请求调度](./03-concurrency.md)
+4. [前缀缓存与计算复用](./04-prefix-cache.md)
+5. [投机解码与生成加速](./05-speculative-decoding.md)
+6. [模型量化与精度选择](./06-quantization.md)
+7. [工作负载分析与参数调优](./07-tuning-by-workload.md)
 
 这些小节的阅读顺序从识别问题开始，逐步认识显存、并发、缓存、生成加速与量化，最后回到如何判断调参是否真的有效。每节只解释足以理解配置及其代价的机制；不以实现推理引擎、推导论文公式或完成固定实验模板为目标。
 
