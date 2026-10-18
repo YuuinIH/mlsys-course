@@ -50,13 +50,7 @@ export default defineConfig({
             ]
           },
           { text: '执行路径与硬件约束', link: '/topics/#topic-execution' },
-          {
-            text: '性能测量与实验',
-            link: '/topics/#topic-measurement',
-            items: [
-              { text: 'L2 · 推理服务性能测量', link: '/essays/serving-tuning/01-what-is-fast' }
-            ]
-          }
+          { text: '通用测量方法与实验设计', link: '/topics/#topic-measurement' }
         ]
       },
       {
@@ -87,6 +81,14 @@ export default defineConfig({
               { text: 'L2 · 为什么需要专门的 LLM 推理引擎？', link: '/essays/serving-tuning/00-why-inference-engines' }
             ]
           },
+          {
+            text: '推理性能与调优',
+            link: '/topics/#topic-serving-performance',
+            items: [
+              { text: '系列导览 · 推理服务调优', link: '/essays/serving-tuning/' },
+              { text: 'L2 · 推理服务性能测量', link: '/essays/serving-tuning/01-what-is-fast' }
+            ]
+          },
           { text: '缓存、状态与数据移动', link: '/topics/#topic-state' }
         ]
       },
@@ -109,10 +111,9 @@ export default defineConfig({
         ]
       },
       {
-        text: '专题与参考',
+        text: '课程设计与参考',
         collapsed: true,
         items: [
-          { text: '推理服务调优（编写中）', link: '/essays/serving-tuning/' },
           { text: '课程设计原则', link: '/outline' },
           { text: '参考资料', link: '/references/' }
         ]
