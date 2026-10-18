@@ -22,7 +22,7 @@ export default defineConfig({
     nav: [
       { text: '首页', link: '/' },
       { text: '专题文章', link: '/essays/' },
-      { text: '主题地图', link: '/topics/' },
+      { text: '课程目录', link: '/topics/' },
       { text: '学习路径', link: '/paths/' },
       { text: '课程设计', link: '/outline' },
       { text: '参考资料', link: '/references/' }
@@ -44,7 +44,8 @@ export default defineConfig({
         items: [
           { text: 'L1 · 为啥需要 MLSys？', link: '/modules/00-systems-thinking' },
           { text: 'L2 · 规模效应：算力、能力与成本', link: '/modules/0X-scaling' },
-          { text: 'L2 · 为什么需要专门的 LLM 推理引擎？', link: '/essays/serving-tuning/00-why-inference-engines' }
+          { text: 'L2 · 为什么需要专门的 LLM 推理引擎？', link: '/essays/serving-tuning/00-why-inference-engines' },
+          { text: 'L2 · 推理服务性能测量', link: '/essays/serving-tuning/01-what-is-fast' }
         ]
       },
       {
