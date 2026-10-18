@@ -11,12 +11,13 @@
 | [为啥需要 MLSys？](/modules/00-systems-thinking) | L1 | 工作负载、系统思维 | 初稿 |
 | [规模效应：算力、能力与成本](/modules/0X-scaling) | L2 | 训练系统、成本与系统决策 | 初稿 |
 | [为什么需要专门的 LLM 推理引擎？](/essays/serving-tuning/00-why-inference-engines) | L2 | 推理系统、技术发展史 | 初稿 |
+| [推理服务性能测量](/essays/serving-tuning/01-what-is-fast) | L2 | 推理系统、性能与测量 | 初稿 |
 
 **初稿**表示已有可读正文，但关键论证、资料或实验可能还需要校对；它不等于完成所有验证。
 
 ## 持续编写中的系列
 
-[推理服务调优：从能跑到好用](/essays/serving-tuning/)：第 0 节已有可读正文；接下来的七个调优小节仍为写作提纲。
+[推理服务调优：从能跑到好用](/essays/serving-tuning/)：第 0、1 节已有可读正文；其余六个小节仍为写作提纲。
 
 原 `docs/modules/` 中其余 16 个编号文件主要是旧课程规划占位稿，暂不列为正式文章。已有长文的原始 URL 保留以兼容外部引用。后续新文章优先放在 `docs/essays/`，使用描述问题的文件名，不再强制编号。
 
