@@ -29,30 +29,92 @@ export default defineConfig({
     ],
     sidebar: [
       {
-        text: '开始',
+        text: '阅读入口',
         items: [
           { text: '课程简介', link: '/' },
-          { text: '专题文章', link: '/essays/' },
-          { text: '主题地图', link: '/topics/' },
-          { text: '学习路径', link: '/paths/' },
-          { text: '课程设计', link: '/outline' }
+          { text: '课程目录 · 主题地图', link: '/topics/' },
+          { text: '已有文章 · 4 篇初稿', link: '/essays/' },
+          { text: '建议学习路径', link: '/paths/' }
         ]
       },
       {
-        text: '文章 · 当前初稿',
+        text: 'I · 认识系统',
+        link: '/topics/#stage-systems',
         collapsed: false,
         items: [
-          { text: 'L1 · 为啥需要 MLSys？', link: '/modules/00-systems-thinking' },
-          { text: 'L2 · 规模效应：算力、能力与成本', link: '/modules/0X-scaling' },
-          { text: 'L2 · 为什么需要专门的 LLM 推理引擎？', link: '/essays/serving-tuning/00-why-inference-engines' },
-          { text: 'L2 · 推理服务性能测量', link: '/essays/serving-tuning/01-what-is-fast' }
+          {
+            text: '工作负载与系统思维',
+            link: '/topics/#topic-workloads',
+            items: [
+              { text: 'L1 · 为啥需要 MLSys？', link: '/modules/00-systems-thinking' }
+            ]
+          },
+          { text: '执行路径与硬件约束', link: '/topics/#topic-execution' },
+          {
+            text: '性能测量与实验',
+            link: '/topics/#topic-measurement',
+            items: [
+              { text: 'L2 · 推理服务性能测量', link: '/essays/serving-tuning/01-what-is-fast' }
+            ]
+          }
         ]
       },
       {
-        text: '专题 · 持续编写',
+        text: 'II · 让模型训练',
+        link: '/topics/#stage-training',
         collapsed: true,
         items: [
-          { text: '推理服务调优：从能跑到好用', link: '/essays/serving-tuning/' }
+          { text: '单机训练与数据供给', link: '/topics/#topic-single-training' },
+          {
+            text: '分布式训练与通信',
+            link: '/topics/#topic-distributed-training',
+            items: [
+              { text: 'L2 · 规模效应：算力、能力与成本', link: '/modules/0X-scaling' }
+            ]
+          },
+          { text: '后训练与模型迭代', link: '/topics/#topic-post-training' }
+        ]
+      },
+      {
+        text: 'III · 让模型服务',
+        link: '/topics/#stage-serving',
+        collapsed: true,
+        items: [
+          {
+            text: '推理引擎与请求调度',
+            link: '/topics/#topic-inference',
+            items: [
+              { text: 'L2 · 为什么需要专门的 LLM 推理引擎？', link: '/essays/serving-tuning/00-why-inference-engines' }
+            ]
+          },
+          { text: '缓存、状态与数据移动', link: '/topics/#topic-state' }
+        ]
+      },
+      {
+        text: 'IV · 让平台运行',
+        link: '/topics/#stage-platform',
+        collapsed: true,
+        items: [
+          { text: '部署、编排与调度', link: '/topics/#topic-orchestration' },
+          { text: '可靠性、可观测性与安全', link: '/topics/#topic-reliability' }
+        ]
+      },
+      {
+        text: 'V · 让工程可持续',
+        link: '/topics/#stage-engineering',
+        collapsed: true,
+        items: [
+          { text: '容量、成本与架构决策', link: '/topics/#topic-cost' },
+          { text: '软件工程与组织协作', link: '/topics/#topic-organization' }
+        ]
+      },
+      {
+        text: '专题与参考',
+        collapsed: true,
+        items: [
+          { text: '推理服务调优（编写中）', link: '/essays/serving-tuning/' },
+          { text: '课程设计原则', link: '/outline' },
+          { text: '参考资料', link: '/references/' }
         ]
       },
       {
@@ -61,8 +123,7 @@ export default defineConfig({
         items: [
           { text: '文章写作建议', link: '/guide/article-guide' },
           { text: '贡献指南', link: '/guide/contributing' },
-          { text: '仓库结构', link: '/guide/repo-structure' },
-          { text: '参考资料', link: '/references/' }
+          { text: '仓库结构', link: '/guide/repo-structure' }
         ]
       }
     ]
