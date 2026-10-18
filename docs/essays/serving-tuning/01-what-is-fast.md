@@ -29,32 +29,13 @@ topics: ["推理系统", "性能与测量", "成本与系统决策"]
 
 先看只有一个用户的情况。用户发送问题，模型开始生成回答。使用流式输出（Streaming）时，客户端会陆续收到内容，不必等整段回答完成。请求大致经历这样的过程：
 
-```text
-客户端                         推理服务器
-  │                                │
-  │ ─────── 发送请求 ────────────► │
-  │                                │
-  │                         请求处理与排队
-  │                                │
-  │                             Prefill
-  │                                │
-  │ ◄────── 第一个 Token ───────── │
-  │                                │
-  │                              Decode
-  │ ◄────── 第二个 Token ───────── │
-  │                                │
-  │                              Decode
-  │ ◄────── 第三个 Token ───────── │
-  │                                │
-  │                               ...
-  │ ◄────── 最后一个 Token ─────── │
-  │                                │
-请求完成
-```
+![流式推理请求的时间线，依次展示 TTFT、ITL、TPOT 和端到端延迟。](/images/essays/serving-tuning/serving-request-timeline.svg)
+
+<small>图 1 · 从客户端观察请求的时间线。阶段长度仅作示意，不对应实际耗时。</small>
 
 自回归模型通常逐个生成 Token。Prefill 阶段处理输入 Prompt，计算相应的中间状态；Decode 阶段利用已有状态继续生成。图中的排队和网络传输并不属于这两个计算阶段，却同样会让用户等待。
 
-我们可以沿着这条时间线，分别看看用户在哪些地方会觉得慢。
+沿着这条时间线，可以分别观察首 Token 的等待、后续输出的停顿，以及整个回答的耗时。
 
 ### 第一个 Token 什么时候出现？
 
@@ -68,11 +49,11 @@ TTFT 容易被误当成 Prefill 耗时。其实它还可能包含网络传输、
 
 要描述一次回答的平均生成速度，可以用 **Time Per Output Token（TPOT）**。常见算法是用首 Token 到最后一个 Token 的耗时，除以首 Token 之后生成的 Token 数量：
 
-\[
+$$
 TPOT=\frac{T_{\text{total}}-TTFT}{N_{\text{output}}-1}
-\]
+$$
 
-这里，`T_{\text{total}}` 是整个请求的端到端延迟，`N_{\text{output}}` 是输出 Token 数量；公式假设至少生成了两个 Token。
+这里，$T_{\text{total}}$ 是整个请求的端到端延迟，$N_{\text{output}}$ 是输出 Token 数量；公式假设至少生成了两个 Token。
 
 也就是把后续生成耗时平均到每个 Token 上。比如某次回答在首 Token 之后，相邻 Token 的到达间隔为：
 
@@ -88,9 +69,9 @@ TPOT=\frac{T_{\text{total}}-TTFT}{N_{\text{output}}-1}
 
 如果用户要等到整段回答生成完毕，关心的就是 **End-to-End Latency（端到端延迟）**：从发出请求到收到完整回答的时间。按上面的流式测量口径，有：
 
-\[
+$$
 T_{\text{total}}=TTFT+(N_{\text{output}}-1)\times TPOT
-\]
+$$
 
 回答“你好”只要几个 Token，写一篇长报告可能要生成几千个 Token。即使用同一个模型，二者的完成时间也很难放在一起比较。报告延迟时，输入和输出长度不能省略。
 
@@ -131,9 +112,9 @@ T_{\text{total}}=TTFT+(N_{\text{output}}-1)\times TPOT
 
 算一下平均值：
 
-\[
-\frac{90\times0.1+10\times5}{100}=0.59s
-\]
+$$
+\frac{90\times0.1+10\times5}{100}=0.59\,\mathrm{s}
+$$
 
 平均 TTFT 只有 590ms。这个数字既不能代表那 90 个很快收到回答的用户，也不能代表另外 10 个等了 5 秒的用户。如果只看平均值，后面这批慢请求很容易被忽略。
 
@@ -147,9 +128,9 @@ T_{\text{total}}=TTFT+(N_{\text{output}}-1)\times TPOT
 
 可以用一个简化的概率例子感受这种规模效应：一次查询需要等待 100 个相互独立的子任务，每个子任务有 95% 的概率按时完成，那么所有子任务都按时完成的概率是
 
-\[
+$$
 0.95^{100}\approx0.59\%
-\]
+$$
 
 真实系统的子任务未必相互独立，也不一定必须等所有任务完成。这个模型只说明：单个节点上不常见的慢请求，在大规模系统中可能变成日常麻烦。
 
@@ -160,6 +141,10 @@ T_{\text{total}}=TTFT+(N_{\text{output}}-1)\times TPOT
 **Percentile（百分位数）**的想法很直接：把请求按延迟从小到大排列。P95 延迟为 1 秒，可以理解为大约 95% 的请求在 1 秒内完成。P50 对应中位数，P99 则看得更靠近最慢的那一端。
 
 前面的 100 个请求，平均 TTFT 是 590ms，P95 TTFT 却是 5 秒。两个数字都没算错，只是回答了不同的问题。
+
+![100 个请求按 TTFT 排序：前 90 个为 0.1 秒，后 10 个为 5 秒；平均值为 0.59 秒，P95 为 5 秒。](/images/essays/serving-tuning/tail-latency-percentiles.svg)
+
+<small>图 2 · 平均值与 P95 描述了同一批请求的不同侧面；数据均为教学示例。</small>
 
 P95 不是 SRE 发明的，它本来就是统计学概念。大型互联网服务的性能监控经常使用百分位数，Google 的 Site Reliability Engineering（SRE，站点可靠性工程）实践也强调过平均延迟掩盖尾部问题的风险。<sup>[[4]](#ref-sre-monitoring)</sup>
 
@@ -200,11 +185,15 @@ A 每秒完成 20 个请求，比 B 的 15 个更多。不过，A 只有一半�
 
 如果只统计满足要求的已完成请求，得到的就是一种 **Goodput（有效吞吐量）**。在这个例子里，可以直接用达标请求数除以测试时间：
 
-\[
-Goodput=\frac{\text{满足延迟要求的完成请求数}}{\text{测量时间}}
-\]
+$$
+\mathrm{Goodput}=\frac{\text{满足延迟要求的完成请求数}}{\text{测量时间}}
+$$
 
 算出来，A 的 Goodput 是 10 req/s，B 是 14.25 req/s。按照这份服务目标，B 的有效吞吐量反而更高。
+
+![A 每分钟完成 1200 个请求、其中 600 个达标；B 完成 900 个、其中 855 个达标。B 的有效吞吐量更高。](/images/essays/serving-tuning/throughput-vs-goodput.svg)
+
+<small>图 3 · 总吞吐量与达标请求吞吐量的区别。两台服务器假设采用相同的 SLO 和工作负载，并非实测结果。</small>
 
 Goodput 并非 LLM 独有的概念。在计算机网络中，它也用来区分真正有效交付的工作和原始传输量。
 
@@ -314,5 +303,7 @@ Benchmark 的作用是提供证据。结论能说到哪一步，取决于实验�
 5. <span id="ref-sre-slo"></span>Google，*Site Reliability Engineering: Service Level Objectives*。[在线阅读](https://sre.google/sre-book/service-level-objectives/)。
 6. <span id="ref-distserve"></span>Zhong et al., *DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving*, OSDI 2024。[USENIX 会议页面](https://www.usenix.org/conference/osdi24/presentation/zhong-yinmin)；[论文](https://arxiv.org/abs/2401.09670)。
 7. <span id="ref-sglang-benchmark"></span>SGLang，*Bench Serving Guide*。[官方文档](https://docs.sglang.ai/developer_guide/bench_serving)。
+
+本文三张性能指标示意图为 Hello MLSys 原创 SVG，根据文中的教学数据绘制，不代表任何引擎的实际测试结果。
 
 [返回本章目录](./index.md)
