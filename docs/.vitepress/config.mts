@@ -47,6 +47,13 @@ export default defineConfig({
         ]
       },
       {
+        text: '专题 · 规划中',
+        collapsed: true,
+        items: [
+          { text: '推理服务调优：从能跑到好用', link: '/essays/serving-tuning/' }
+        ]
+      },
+      {
         text: '参与编写',
         collapsed: true,
         items: [
