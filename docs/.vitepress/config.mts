@@ -43,11 +43,12 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: 'L1 · 为啥需要 MLSys？', link: '/modules/00-systems-thinking' },
-          { text: 'L2 · 规模效应：算力、能力与成本', link: '/modules/0X-scaling' }
+          { text: 'L2 · 规模效应：算力、能力与成本', link: '/modules/0X-scaling' },
+          { text: 'L2 · 为什么需要专门的 LLM 推理引擎？', link: '/essays/serving-tuning/00-why-inference-engines' }
         ]
       },
       {
-        text: '专题 · 规划中',
+        text: '专题 · 持续编写',
         collapsed: true,
         items: [
           { text: '推理服务调优：从能跑到好用', link: '/essays/serving-tuning/' }
