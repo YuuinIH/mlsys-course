@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="475" viewBox="0 0 1100 475" role="img" aria-labelledby="title desc">
+<title id="title">Orca、vLLM 和 SGLang 三种研究切入点</title><desc id="desc">这是一张研究问题对照图，不表示 Orca、vLLM、SGLang 的代码继承关系。Orca 关注请求调度，vLLM 关注 KV Cache 内存管理，SGLang 关注复杂语言模型程序执行与前缀复用。</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#718298"/></marker><marker id="blue-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#5580cb"/></marker><style>
+  text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; fill: #182536; }
+  .title { font-size: 27px; font-weight: 750; }
+  .subtitle { font-size: 16px; fill: #596b80; }
+  .section { font-size: 20px; font-weight: 700; }
+  .main { font-size: 19px; font-weight: 700; }
+  .small { font-size: 16px; fill: #53657a; }
+  .tiny { font-size: 14px; fill: #66788e; }
+  .center { text-anchor: middle; }
+  .panel { fill: #ffffff; stroke: #c4cfdd; stroke-width: 1.8; }
+  .blue { fill: #edf4ff; stroke: #5580cb; stroke-width: 2; }
+  .orange { fill: #fff4df; stroke: #d59b48; stroke-width: 2; }
+  .green { fill: #e7f5ed; stroke: #56a27c; stroke-width: 2; }
+  .purple { fill: #f3effc; stroke: #9c83cd; stroke-width: 2; }
+  .muted { fill: #f3f6fa; stroke: #bcc8d6; stroke-width: 1.7; }
+  .muted-dash { fill: #f7f9fc; stroke: #acb8c8; stroke-width: 2; stroke-dasharray: 8 6; }
+  .key { font-weight: 700; fill: #315d9c; }
+  .connector { fill: none; stroke: #718298; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .blue-connector { fill: none; stroke: #5580cb; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+  .orange-connector { fill: none; stroke: #d59b48; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+  .dashed { stroke-dasharray: 9 8; }
+  @media(prefers-color-scheme: dark){
+    text {fill:#eef2f8;} .subtitle,.small,.tiny{fill:#b7c4d3;}
+    .panel {fill:#1b2533;stroke:#56677b;} .blue {fill:#1e3557;stroke:#84aff7;}
+    .orange {fill:#49341b;stroke:#e5ad5c;} .green {fill:#203c2f;stroke:#78c79e;}
+    .purple {fill:#322846;stroke:#bb9be4;} .muted {fill:#263141;stroke:#66768a;}
+    .muted-dash {fill:#202b39;stroke:#708299;} .key{fill:#a5c8ff;}
+    .connector{stroke:#a8b6c6;} .blue-connector{stroke:#86b1f8;} .orange-connector{stroke:#edb663;}
+  }</style></defs><text x="48" y="54" class="title">不同的研究切入点，共同的系统目标</text><text x="48" y="83" class="subtitle">这不是代码继承关系，也不是这些项目今天唯一拥有的能力</text><rect x="39" y="120" width="324" height="241" rx="22" class="blue"/><text x="63" y="157" class="small">2022 · OSDI</text><text x="63" y="208" class="title">Orca</text><text x="63" y="245" class="small">请求何时进入 Batch？</text><path d="M63 266 H339" class="connector"/><text x="63" y="297" class="main">迭代级调度</text><text x="63" y="330" class="small">调度粒度</text><rect x="378" y="120" width="324" height="241" rx="22" class="green"/><text x="402" y="157" class="small">2023 · SOSP</text><text x="402" y="208" class="title">vLLM</text><text x="402" y="245" class="small">动态 KV Cache 放哪里？</text><path d="M402 266 H678" class="connector"/><text x="402" y="297" class="main">PagedAttention</text><text x="402" y="330" class="small">显存管理</text><rect x="717" y="120" width="324" height="241" rx="22" class="orange"/><text x="741" y="157" class="small">2023/24 · NeurIPS</text><text x="741" y="208" class="title">SGLang</text><text x="741" y="245" class="small">相同上下文能否复用？</text><path d="M741 266 H1017" class="connector"/><text x="741" y="297" class="main">RadixAttention 等</text><text x="741" y="330" class="small">程序执行与复用</text><path d="M201 362 V395 M540 362 V395 M879 362 V395 M201 395 H879" class="connector"/><rect x="255" y="405" width="592" height="52" rx="17" class="muted"/><text x="551" y="438" class="main center">让有限资源完成更多有效推理工作</text></svg>
