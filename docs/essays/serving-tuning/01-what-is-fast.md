@@ -261,7 +261,7 @@ vllm bench serve \
   --metric-percentiles 50,95,99
 ```
 
-这组参数参考了 vLLM 官方 Benchmark CLI。各版本参数可能变化，运行前应查看 `vllm bench serve --help`。它构造目标输入长度 512 Tokens、目标输出长度 128 Tokens 的随机请求，按平均每秒一个请求的速率发送。
+这条命令构造目标输入长度为 512 Tokens、目标输出长度为 128 Tokens 的随机请求，按平均每秒一个请求的速率发送。
 
 注意，`--request-rate 1` 约束的是请求**到达**速率，实际到达间隔可能不均匀，也不保证服务器每秒完成一个请求。模型还可能提前停止生成，所以要检查实际输出长度。
 
