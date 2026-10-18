@@ -49,15 +49,9 @@ topics: ["推理系统", "计算与执行", "数据、存储与状态"]
 
 Orca 提出了 **Iteration-level Scheduling（迭代级调度）**：将一次生成迭代作为调度边界。在迭代之间，系统可以移走完成的请求，并在容量允许时加入新请求。
 
-```text
-固定的请求级 Batch：
-  [A, B, C] ──────────────── 等待这一批执行完 ──> [D, E, ...]
+![固定 Batch 与 Orca 迭代级调度对比：固定 Batch 要等本批次完成才接纳新请求；迭代级调度允许移除完成请求并在容量允许时加入新请求。](/images/essays/serving-tuning/orca-iteration-scheduling.svg)
 
-迭代级调度（简化示意）：
-  第 1 轮  [A, B, C]
-  第 N 轮  [B, C, D]   ← A 已结束，D 加入
-  第 M 轮  [C, D, E]   ← B 已结束，E 加入
-```
+<small>图 1 · 调度粒度的变化。示例只展示请求集合如何变化，不对应真实的 Token 数量或迭代耗时。</small>
 
 Orca 还提出 **Selective Batching**，因为 Transformer 中不同操作适合的批处理方式并不相同。它的意义不只是“让 Batch 更大”，而是让调度能够适应请求的动态变化。后来常说的 **Continuous Batching（连续批处理）**，便与这条研究路线密切相关。
 
@@ -79,16 +73,9 @@ Orca 还提出 **Selective Batching**，因为 Transformer 中不同操作适合
 
 PagedAttention 的思路是把 KV Cache 分成固定大小的 **Block**，通过逻辑 Block 到物理 Block 的映射，避免要求每个请求的缓存都连续摆放在物理显存里。
 
-```text
-Request A 的逻辑 KV Cache：
-  [A0] → [A1] → [A2] → [A3]
+![PagedAttention 的逻辑 KV Block 和物理显存 Block：请求 A 的 A0、A1、A2、A3 在逻辑上连续，在显存中分别映射到不连续的 P3、P6、P1、P5。](/images/essays/serving-tuning/vllm-paged-kv-cache.svg)
 
-实际物理 Block（示意）：
-  [B1] [A2] [空] [A0] [C0] [A3] [A1]
-        ↑         ↑              ↑    ↑
-        └─────────┴──────────────┴────┘
-                 属于 Request A
-```
+<small>图 2 · KV Cache 的逻辑顺序不等于物理布局。实际实现还包含 Block 分配、映射、共享和回收等机制。</small>
 
 对学过操作系统的读者，这个想法并不陌生：**用一层地址映射，换取更灵活的物理内存管理。** vLLM 还利用共享 Block、引用计数和 Copy-on-Write 等机制，减少某些场景下重复保存 KV Cache 的开销。
 
@@ -129,17 +116,9 @@ vLLM 最初给出的重要启示是：**推理性能不仅取决于我们算得�
 
 其中很有代表性的一项技术是 **RadixAttention**：用 Radix Tree（基数树）组织 KV Cache 的共享前缀，以便后续请求尽可能复用已有的计算结果。
 
-```text
-                相同的 System Prompt
-                        │
-                   可复用的前缀
-                        │
-                 ┌──────┴──────┐
-                 ▼             ▼
-              问题 A         问题 B
-                 │             │
-              生成 A         生成 B
-```
+![RadixAttention 前缀复用示意：两条请求共享相同的角色设定、任务规则、输出格式前缀；随后分别计算 GIL 与装饰器问题的后缀。](/images/essays/serving-tuning/sglang-radix-prefix-cache.svg)
+
+<small>图 3 · 相同 Token 前缀可以复用已计算的 KV Cache；不同后缀仍需要独立计算。示意图不代表具体的 Radix Tree 节点布局。</small>
 
 前缀复用并不意味着两个请求共享最终回答；它只是在前缀 Token 和相应计算状态可复用时，省去重复的 Prefill 计算。缓存是否命中，还受到 Token 是否完全一致、缓存是否保留以及显存压力等条件影响。
 
@@ -174,18 +153,9 @@ llama.cpp 则说明了另一种需求：如果主要目标是在笔记本电脑�
 
 把 Orca、vLLM 和 SGLang 放在一起看，会发现一条很有意思的研究线索：
 
-```text
-生成式模型需要多轮执行
-          │
-          ├── 请求长短不同、到达时间不同
-          │      └── Orca：重新思考调度粒度
-          │
-          ├── KV Cache 动态增长、显存有限
-          │      └── vLLM：重新思考缓存的物理布局
-          │
-          └── 多次调用有共享的输入与程序结构
-                 └── SGLang：重新思考计算的复用方式
-```
+![Orca、vLLM 与 SGLang 三个项目的研究问题对照：Orca 讨论迭代级调度，vLLM 讨论 KV Cache 分页管理，SGLang 讨论语言模型程序执行与前缀复用。](/images/essays/serving-tuning/inference-engine-research-map.svg)
+
+<small>图 4 · 不同研究切入点，共同面对在线推理的资源约束；这不是项目继承关系或完整功能对比。</small>
 
 这张图描述的是**研究问题之间的联系，不是项目代码的继承关系**。
 
@@ -230,3 +200,4 @@ llama.cpp 则说明了另一种需求：如果主要目标是在笔记本电脑�
 5. <span id="ref-tgi"></span>Hugging Face，*Text Generation Inference*。[官方文档与维护状态说明](https://huggingface.co/docs/inference-endpoints/engines/tgi)。
 6. <span id="ref-llamacpp"></span>ggml-org，[llama.cpp 项目仓库](https://github.com/ggml-org/llama.cpp)。
 7. NVIDIA，[TensorRT-LLM 文档](https://nvidia.github.io/TensorRT-LLM/)。
+8. 本文四张机制示意图为 Hello MLSys 原创 SVG，依据对应论文中的设计思想绘制；不复用论文插图。
