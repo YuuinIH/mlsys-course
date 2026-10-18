@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1100" height="456" viewBox="0 0 1100 456" role="img" aria-labelledby="title desc">
-<title id="title">100 个请求的 TTFT 延迟分布与平均值、P95 对比</title><desc id="desc">模拟的100个请求按 TTFT 从小到大排列，前90个每个0.1秒，后10个每个5秒。平均TTFT为0.59秒，P95为5秒。图中的每根柱代表一个请求，柱高按同一延迟标尺示意。</desc>
+<title id="title">100 个请求的 TTFT 延迟分布与平均值、P95 对比</title><desc id="desc">模拟的100个请求按 TTFT 从小到大排列，前90个每个0.1秒，后10个每个5秒。平均TTFT为0.59秒，P95为5秒。图中的每根柱代表一个请求，柱高只帮助区分快慢，没有按耗时等比例绘制。</desc>
 
 <defs><style>
  text {font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#182536}
