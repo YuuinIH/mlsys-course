@@ -98,7 +98,7 @@ $$
 | 只有 1 个请求 | 50 tokens/s | 50 tokens/s |
 | 同时处理 8 个请求 | 15 tokens/s | 120 tokens/s |
 
-*这是为了说明指标差异而编造的教学数据，并非真实 Benchmark；第二行假设八个请求的生成过程充分重叠。*
+*第二行假设八个请求的生成过程充分重叠。*
 
 八个请求同时执行时，单个用户的速度从 50 降到 15 tokens/s，但服务器总输出吞吐量从 50 升到了 120 tokens/s。
 
@@ -144,7 +144,7 @@ $$
 
 ![100 个请求按 TTFT 排序：前 90 个为 0.1 秒，后 10 个为 5 秒；平均值为 0.59 秒，P95 为 5 秒。](/images/essays/serving-tuning/tail-latency-percentiles.svg)
 
-<small>图 2 · 平均值与 P95 描述了同一批请求的不同侧面。数据为教学示例，柱高不按耗时等比例绘制。</small>
+<small>图 2 · 平均值与 P95 描述了同一批请求的不同侧面，柱高不按耗时等比例绘制。</small>
 
 P95 不是 SRE 发明的，它本来就是统计学概念。大型互联网服务的性能监控经常使用百分位数，Google 的 Site Reliability Engineering（SRE，站点可靠性工程）实践也强调过平均延迟掩盖尾部问题的风险。<sup>[[4]](#ref-sre-monitoring)</sup>
 
@@ -162,7 +162,7 @@ P95 也有局限：它不告诉我们最慢的 5% 到底有多慢，更不解释
 
 > 在预期的使用负载下，至少 95% 的请求应该在 2 秒内收到第一个 Token。
 
-这种可以检验的服务目标，叫 **Service Level Objective（SLO，服务等级目标）**。<sup>[[5]](#ref-sre-slo)</sup> 这里的 2 秒和 95% 只是教学示例，不是行业统一标准。
+这种可以检验的服务目标，叫 **Service Level Objective（SLO，服务等级目标）**。<sup>[[5]](#ref-sre-slo)</sup>
 
 聊天机器人可能特别在意首 Token 到达时间和后续输出是否流畅；夜间批量处理文档，则可能更关心用现有 GPU 处理完多少任务。两种场景对“足够快”的要求本来就不同。
 
@@ -179,7 +179,6 @@ P95 也有局限：它不告诉我们最慢的 5% 到底有多慢，更不解释
 | 请求吞吐量 | 20 req/s | 15 req/s |
 | 满足要求的请求比例 | 50% | 95% |
 
-*以上是教学用的假设数据，并非真实 Benchmark。*
 
 A 每秒完成 20 个请求，比 B 的 15 个更多。不过，A 只有一半请求满足延迟要求；B 虽然完成得少，达标的请求反倒更多。
 
@@ -193,7 +192,7 @@ $$
 
 ![A 每分钟完成 1200 个请求、其中 600 个达标；B 完成 900 个、其中 855 个达标。B 的有效吞吐量更高。](/images/essays/serving-tuning/throughput-vs-goodput.svg)
 
-<small>图 3 · 总吞吐量与达标请求吞吐量的区别。两台服务器假设采用相同的 SLO 和工作负载，并非实测结果。</small>
+<small>图 3 · 总吞吐量与达标请求吞吐量的区别。两台服务器采用相同的 SLO 和工作负载。</small>
 
 Goodput 并非 LLM 独有的概念。在计算机网络中，它也用来区分真正有效交付的工作和原始传输量。
 
@@ -266,7 +265,7 @@ vllm bench serve \
 
 注意，`--request-rate 1` 约束的是请求**到达**速率，实际到达间隔可能不均匀，也不保证服务器每秒完成一个请求。模型还可能提前停止生成，所以要检查实际输出长度。
 
-把 `--request-rate` 依次换成 0.5、2、4，观察完成请求吞吐量、TTFT 和 TPOT 如何变化。这些只是示例档位，不代表服务器真实的处理上限。
+把 `--request-rate` 依次换成 0.5、2、4，观察完成请求吞吐量、TTFT 和 TPOT 如何变化。
 
 运行前可以猜一猜：
 
@@ -304,6 +303,6 @@ Benchmark 的作用是提供证据。结论能说到哪一步，取决于实验�
 6. <span id="ref-distserve"></span>Zhong et al., *DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving*, OSDI 2024。[USENIX 会议页面](https://www.usenix.org/conference/osdi24/presentation/zhong-yinmin)；[论文](https://arxiv.org/abs/2401.09670)。
 7. <span id="ref-sglang-benchmark"></span>SGLang，*Bench Serving Guide*。[官方文档](https://docs.sglang.ai/developer_guide/bench_serving)。
 
-本文三张性能指标示意图为 Hello MLSys 原创 SVG，根据文中的教学数据绘制，不代表任何引擎的实际测试结果。
+本文三张性能指标示意图为 Hello MLSys 原创 SVG。
 
 [返回本章目录](./index.md)
