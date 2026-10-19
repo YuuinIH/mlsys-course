@@ -5,6 +5,10 @@ status: draft
 topics: ["推理系统", "性能与测量"]
 ---
 
+<script setup>
+import KvCacheWalkthrough from '../../.vitepress/components/KvCacheWalkthrough.vue'
+</script>
+
 # 2. 显存预算与模型配置
 
 > **L2 · Engineering** · **初稿** · 推理系统 / 性能与测量。本文从显存预算出发，解释模型配置、上下文长度与服务容量之间的关系。
@@ -44,6 +48,12 @@ KV Cache 保存各请求已处理 Token 的一部分计算结果，供后续生�
 在一层注意力计算中，Token 的中间表示会变换成 Query（Q）、Key（K）和 Value（V）向量。当前位置的 Query 与已有位置的 Key 比较，决定怎样汇总对应的 Value。它们都是数值向量；按层、Token 位置等维度组织起来，就形成多维数组，也就是张量（Tensor）。
 
 在模型参数不变的因果自注意力中，历史 Token 的 K、V 不会因后续 Token 到来而改变。引擎可以保留各层已经算出的 K、V，这就是 KV Cache。后续 Token 使用自己的 Query 访问这些历史状态，从而省去重复计算历史 K、V 的工作。<sup>[[3]](#ref-cache-basics)</sup>
+
+下面用四个输入 Token 和后续输出观察这个过程。点击“播放”可以连续演示，也可以逐步查看 K、V 何时写入缓存、已有状态怎样被复用。
+
+<KvCacheWalkthrough />
+
+<small>图 2 · 一层、一个 KV Head 的状态变化。Q 参与本步计算，K、V 跨步骤保留；新输出的 Token 在下一步被处理时才产生对应的 KV。</small>
 
 ### Prefill 和 Decode 怎样改变缓存？
 
@@ -153,7 +163,7 @@ Hugging Face 的 KV Cache 量化文章以 Llama-2-7B 为例：32 层、32 个 KV
 
 [![一条请求的三个逻辑 Block 依次映射到物理池中的 P3、P6 和 P1。前两块各保存 16 个 Token，最后一块保存 3 个 Token，留下 13 个空位；物理池中的其他空闲块可以分给其他请求。](/images/essays/serving-tuning/kv-block-allocation.svg)](/images/essays/serving-tuning/kv-block-allocation.svg)
 
-<small>图 2 · 35 个 Token 取得三个物理块。块内空位与池内空闲块是两种不同的剩余空间。点击图片可查看原图。</small>
+<small>图 3 · 35 个 Token 取得三个物理块。块内空位与池内空闲块是两种不同的剩余空间。点击图片可查看原图。</small>
 
 逻辑 Block 描述请求内 Token 的顺序；物理 Block 是缓存池中实际提供存储的块。P3、P6、P1 可以分散在池里的不同位置，映射保证引擎能找到对应状态。这里把一个 Token 在所有层的缓存一起计账，实际存储还会按层、张量或缓存组组织。
 
@@ -238,7 +248,7 @@ $$
 
 [![6、12、24 条同长度请求的 KV 需求随保留长度线性增长，分别在每条 8192、4096、2048 Tokens 时达到 6 GiB 池容量。超过这些交点，池便无法同时保留全部请求的状态。](/images/essays/serving-tuning/kv-capacity-boundary.svg)](/images/essays/serving-tuning/kv-capacity-boundary.svg)
 
-<small>图 3 · 按每 Token 128 KiB 绘制的容量边界。横轴为每条请求保留的长度，纵轴为所有请求合计的 KV 需求；曲线按连续长度示意，实际按整 Block 分配。</small>
+<small>图 4 · 按每 Token 128 KiB 绘制的容量边界。横轴为每条请求保留的长度，纵轴为所有请求合计的 KV 需求；曲线按连续长度示意，实际按整 Block 分配。</small>
 
 例如，12 条请求各保留 2048 Tokens 时，只需 3 GiB；各增长到 4096 Tokens，就碰到 6 GiB 的边界。再往右的曲线表示仍想保留全部状态所需的容量，引擎必须先等请求结束、释放缓存，或调整执行安排。
 
@@ -282,7 +292,7 @@ vLLM 可以先从 GPU 取得一片显存作为 KV 池，再按需把池内的 Bl
 
 [![同一个 6 GiB KV 池的四种占用状态：空闲时使用 0 Blocks，12 条各保留 2048 Tokens 的请求使用 1536 Blocks，各增长到 4096 Tokens 时使用全部 3072 Blocks，请求结束后回到 0 Blocks。池的容量始终为 6 GiB。](/images/essays/serving-tuning/kv-pool-occupancy.svg)](/images/essays/serving-tuning/kv-pool-occupancy.svg)
 
-<small>图 4 · 池的分配容量与请求使用的块数分别变化。按本文教学参数绘制，关闭前缀缓存且请求独占各自的 Block。</small>
+<small>图 5 · 池的分配容量与请求使用的块数分别变化。按本文教学参数绘制，关闭前缀缓存且请求独占各自的 Block。</small>
 
 `nvidia-smi` 看到的是进程显存占用，引擎内部还要统计哪些缓存块正被请求使用。进程占用很高时，池内仍可能有许多空闲块；请求占用的块不断增加时，进程占用也可能几乎不动。
 
