@@ -16,4 +16,4 @@ Hello MLSys 面向具备 CS 本科基础的读者，既不是只讲 LLM 的课�
 
 课程不重讲完整 ML 算法，不把 RAG 应用构建或工具安装大全当作核心目标，也不预设某个系统架构永远优于其他方案。
 
-完整定位、十三个主题、Non-goals 和实践原则以仓库中的 [COURSE_OUTLINE.md](https://github.com/YuuinIH/mlsys-course/blob/main/COURSE_OUTLINE.md) 为准；本站目前有 **4 篇可读初稿**，可从[文章索引](/essays/)开始。
+完整定位、十三个主题、Non-goals 和实践原则以仓库中的 [COURSE_OUTLINE.md](https://github.com/YuuinIH/mlsys-course/blob/main/COURSE_OUTLINE.md) 为准；本站目前有 **5 篇可读初稿**，可从[文章索引](/essays/)开始。

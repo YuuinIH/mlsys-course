@@ -33,7 +33,7 @@ export default defineConfig({
         items: [
           { text: '课程简介', link: '/' },
           { text: '课程目录 · 主题地图', link: '/topics/' },
-          { text: '已有文章 · 4 篇初稿', link: '/essays/' },
+          { text: '已有文章 · 5 篇初稿', link: '/essays/' },
           { text: '建议学习路径', link: '/paths/' }
         ]
       },
@@ -86,7 +86,8 @@ export default defineConfig({
             link: '/topics/#topic-serving-performance',
             items: [
               { text: '系列导览 · 推理服务调优', link: '/essays/serving-tuning/' },
-              { text: 'L2 · 推理服务性能测量', link: '/essays/serving-tuning/01-what-is-fast' }
+              { text: 'L2 · 推理服务性能测量', link: '/essays/serving-tuning/01-what-is-fast' },
+              { text: 'L2 · 显存预算与模型配置', link: '/essays/serving-tuning/02-memory-budget' }
             ]
           },
           { text: '缓存、状态与数据移动', link: '/topics/#topic-state' }

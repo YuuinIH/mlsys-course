@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="642" viewBox="0 0 1100 642" role="img" aria-labelledby="title desc">
+  <title id="title">KV 池容量与活跃请求占用</title>
+  <desc id="desc">同一片 6 GiB 的 KV 池包含 3072 个 Block。空闲时请求使用 0 个 Block，12 条各保留 2048 Tokens 的请求使用 1536 个 Block；各增长到 4096 Tokens 时使用 3072 个 Block；请求结束后回到 0 个 Block。四种状态中，KV 池的分配容量相同。</desc>
+  <defs>
+    <style>
+      text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#182536}
+      .title{font-size:27px;font-weight:750}.sub{font-size:18px;fill:#5b6c80}
+      .label{font-size:21px;font-weight:700}.small{font-size:18px;fill:#4e6075}.value{font-size:20px;font-weight:700;text-anchor:end}
+      .panel{fill:#fff;stroke:#c4cfdd;stroke-width:1.6}.pool{fill:#f2f6fa;stroke:#91a6c1;stroke-width:1.7}
+      .active{fill:#4d83d0}.empty{fill:#63758a}.divider{stroke:#c4cfdd;stroke-width:1;stroke-dasharray:4 6}
+      @media(prefers-color-scheme:dark){
+        text{fill:#edf2fa}.sub,.small,.empty{fill:#bac6d7}
+        .panel{fill:#1b2533;stroke:#596b7e}.pool{fill:#283446;stroke:#849ab5}
+        .active{fill:#79a8e9}.divider{stroke:#596b7e}
+      }
+    </style>
+  </defs>
+  <text x="42" y="53" class="title">池容量不变，请求占用的 Block 在变化</text>
+  <text x="42" y="84" class="sub">同一片 KV 池：6 GiB · 3072 Blocks · 每块 16 Tokens</text>
+  <rect x="34" y="106" width="1032" height="452" rx="20" class="panel"/>
+
+  <text x="64" y="156" class="label">尚无请求</text>
+  <text x="64" y="186" class="small">池内全部空闲</text>
+  <rect x="340" y="139" width="476" height="50" rx="6" class="pool"/>
+  <text x="578" y="171" text-anchor="middle" class="small empty">空闲块</text>
+  <text x="1034" y="171" class="value">0 / 3072 Blocks</text>
+  <line x1="64" y1="215" x2="1034" y2="215" class="divider"/>
+
+  <text x="64" y="264" class="label">请求正在执行</text>
+  <text x="64" y="294" class="small">12 条 × 2048 Tokens</text>
+  <rect x="340" y="247" width="476" height="50" rx="6" class="pool"/>
+  <rect x="341" y="248" width="237" height="48" rx="5" class="active"/>
+  <text x="1034" y="279" class="value">1536 / 3072 Blocks</text>
+  <line x1="64" y1="323" x2="1034" y2="323" class="divider"/>
+
+  <text x="64" y="372" class="label">上下文继续增长</text>
+  <text x="64" y="402" class="small">12 条 × 4096 Tokens</text>
+  <rect x="340" y="355" width="476" height="50" rx="6" class="pool"/>
+  <rect x="341" y="356" width="474" height="48" rx="5" class="active"/>
+  <text x="1034" y="387" class="value">3072 / 3072 Blocks</text>
+  <line x1="64" y1="431" x2="1034" y2="431" class="divider"/>
+
+  <text x="64" y="480" class="label">所有请求结束</text>
+  <text x="64" y="510" class="small">块可用于下一批请求</text>
+  <rect x="340" y="463" width="476" height="50" rx="6" class="pool"/>
+  <text x="578" y="495" text-anchor="middle" class="small empty">空闲块</text>
+  <text x="1034" y="495" class="value">0 / 3072 Blocks</text>
+
+  <rect x="50" y="588" width="22" height="18" rx="3" class="active"/>
+  <text x="83" y="604" class="small">请求正在使用的块</text>
+  <rect x="330" y="588" width="22" height="18" rx="3" class="pool"/>
+  <text x="363" y="604" class="small">池内空闲块</text>
+  <text x="1050" y="604" class="small" text-anchor="end">每行外框均为已分配的 6 GiB KV 池</text>
+</svg>
