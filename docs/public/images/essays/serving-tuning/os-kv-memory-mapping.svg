@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="760" viewBox="0 0 1100 760" role="img" aria-labelledby="title desc">
+  <title id="title">操作系统分页与 KV Block 管理的对应关系</title>
+  <desc id="desc">左右对照两种映射。左侧进程的虚拟页 0、1 映射到物理页框 3、1；右侧请求的逻辑 Block 0、1 映射到预分配 KV 池的 P3、P1。两侧的第 2 个逻辑单元都尚未分配物理空间。末页或末块的斜线部分是已分配但尚未使用的空间，另有完整的空闲页框或 Block。需求增长时分配空闲单元，释放后回收复用。两种映射的对象和粒度分别定义。</desc>
+  <defs>
+    <style>
+      text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#182536}
+      .title{font-size:27px;font-weight:750}.sub{font-size:18px;fill:#5b6c80}.label{font-size:22px;font-weight:700}.small{font-size:19px;fill:#4e6075}.node{font-size:20px;text-anchor:middle}.white{fill:#fff}
+      .panel{fill:#fff;stroke:#c4cfdd;stroke-width:1.6}.free{fill:#f2f6fa;stroke:#91a6c1;stroke-width:1.5}
+      .first{fill:#4d83d0}.second{fill:#bd7833}.future{fill:none;stroke:#91a6c1;stroke-width:1.5;stroke-dasharray:5 5}.range{fill:none;stroke:#c4cfdd;stroke-width:1.3;stroke-dasharray:3 5}
+      .tail{fill:url(#hatch);stroke:#bd7833;stroke-width:1.4}.hatch-bg{fill:#faf0df}.hatch-line{stroke:#bd7833;stroke-width:1.1}.text-bg{fill:#fff}
+      .route{fill:none;stroke-width:3;stroke-linecap:round}.r0{stroke:#4d83d0}.r1{stroke:#bd7833}.halo{fill:none;stroke:#fff;stroke-width:9}.flow{fill:none;stroke:#63758a;stroke-width:2.5}
+      @media(prefers-color-scheme:dark){
+        text{fill:#edf2fa}.sub,.small{fill:#bac6d7}.panel{fill:#1b2533;stroke:#596b7e}.free{fill:#283446;stroke:#849ab5}
+        .first{fill:#79a8e9}.second{fill:#e6b568}.white{fill:#182536}.future{stroke:#849ab5}.range{stroke:#596b7e}
+        .tail,.hatch-line{stroke:#e6b568}.hatch-bg{fill:#463b2d}.text-bg{fill:#1b2533}.r0{stroke:#79a8e9}.r1{stroke:#e6b568}.halo{stroke:#1b2533}.flow{stroke:#bac6d7}
+      }
+    </style>
+    <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" class="hatch-bg"/><path d="M-2 2L2-2M0 8L8 0M6 10L10 6" class="hatch-line"/></pattern>
+    <marker id="arrow0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" class="first"/></marker>
+    <marker id="arrow1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" class="second"/></marker>
+    <g id="layout">
+      <rect width="500" height="420" rx="20" class="panel"/>
+      <rect x="16" y="103" width="166" height="237" rx="8" class="range"/>
+      <rect x="26" y="118" width="146" height="50" rx="5" class="first"/>
+      <rect x="26" y="194" width="146" height="50" rx="5" class="tail"/>
+      <rect x="26" y="194" width="57" height="50" rx="5" class="second"/>
+      <rect x="88" y="202" width="77" height="34" rx="3" class="text-bg"/>
+      <rect x="26" y="270" width="146" height="50" rx="5" class="future"/>
+      <rect x="310" y="106" width="164" height="52" rx="5" class="free"/>
+      <rect x="310" y="174" width="164" height="52" rx="5" class="tail"/>
+      <rect x="310" y="174" width="64" height="52" rx="5" class="second"/>
+      <rect x="379" y="183" width="88" height="34" rx="3" class="text-bg"/>
+      <rect x="310" y="242" width="164" height="52" rx="5" class="free"/>
+      <rect x="310" y="310" width="164" height="52" rx="5" class="first"/>
+      <path d="M190 143C260 143 236 336 296 336" class="route r0" marker-end="url(#arrow0)"/>
+      <path d="M190 219C242 219 246 200 296 200" class="halo"/>
+      <path d="M190 219C242 219 246 200 296 200" class="route r1" marker-end="url(#arrow1)"/>
+    </g>
+  </defs>
+
+  <text x="42" y="48" class="title">分页的共同思路：把逻辑顺序与物理位置分开</text>
+  <text x="42" y="80" class="sub">左：进程的虚拟页与物理页框 · 右：请求的 KV Block 与缓存池</text>
+
+  <g transform="translate(34 106)">
+    <use href="#layout"/>
+    <text x="26" y="45" class="label">操作系统的内存管理</text>
+    <text x="26" y="85" class="small">进程的虚拟页</text>
+    <text x="310" y="85" class="small">物理页框（局部）</text>
+    <text x="99" y="150" class="node white">虚拟页 0</text>
+    <text x="126" y="226" class="node">页 1</text>
+    <text x="99" y="291" class="node">虚拟页 2</text>
+    <text x="99" y="312" class="sub" text-anchor="middle">尚未分配页框</text>
+    <text x="392" y="139" class="node">页框 0 · 空闲</text>
+    <text x="423" y="207" class="node">页框 1</text>
+    <text x="392" y="275" class="node">页框 2 · 空闲</text>
+    <text x="392" y="343" class="node white">页框 3</text>
+    <text x="26" y="396" class="small">页表参与虚拟地址到物理地址的转换</text>
+  </g>
+
+  <g transform="translate(566 106)">
+    <use href="#layout"/>
+    <text x="26" y="45" class="label">推理引擎的 KV 管理</text>
+    <text x="26" y="85" class="small">请求的逻辑 Block</text>
+    <text x="310" y="85" class="small">预分配的 KV 池</text>
+    <text x="99" y="150" class="node white">Block 0</text>
+    <text x="126" y="226" class="node" style="font-size:18px">Block 1</text>
+    <text x="99" y="291" class="node">Block 2</text>
+    <text x="99" y="312" class="sub" text-anchor="middle">尚未分配物理块</text>
+    <text x="392" y="139" class="node">P0 · 空闲</text>
+    <text x="423" y="207" class="node">P1</text>
+    <text x="392" y="275" class="node">P2 · 空闲</text>
+    <text x="392" y="343" class="node white">P3</text>
+    <text x="26" y="396" class="small">引擎记录逻辑块到池内存储块的映射</text>
+  </g>
+
+  <rect x="52" y="558" width="24" height="20" rx="3" class="first"/><text x="88" y="575" class="small">已分配并使用</text>
+  <rect x="326" y="558" width="24" height="20" rx="3" class="tail"/><text x="362" y="575" class="small">尾页 / 尾块的剩余空间</text>
+  <rect x="742" y="558" width="24" height="20" rx="3" class="free"/><text x="778" y="575" class="small">空闲页框 / Block</text>
+
+  <rect x="34" y="610" width="300" height="64" rx="10" class="free"/><text x="184" y="650" class="node">使用需求继续增长</text>
+  <path d="M348 642H384M374 633L385 642L374 651" class="flow"/>
+  <rect x="400" y="610" width="300" height="64" rx="10" class="free"/><text x="550" y="650" class="node">分配空闲页框 / Block</text>
+  <path d="M714 642H750M740 633L751 642L740 651" class="flow"/>
+  <rect x="766" y="610" width="300" height="64" rx="10" class="free"/><text x="916" y="650" class="node">释放后回收复用</text>
+
+  <text x="42" y="716" class="small">逻辑范围的上限、当前占用、物理总容量，分别计量。</text>
+  <text x="42" y="745" class="sub">虚拟页与 KV Block 的映射对象、分配粒度分别定义；图中大小和填充比例仅作示意。</text>
+</svg>
