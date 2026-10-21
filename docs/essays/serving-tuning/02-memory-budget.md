@@ -290,26 +290,22 @@ CUDA OOM 是一次设备内存分配失败；KV 池满则是引擎无法从既�
 
 ## 把预算对应到 vLLM 配置
 
-在 vLLM 0.10.2 中，可以用下面这些参数设置相应的预算和限制，后面的观察步骤也使用这一版本。<sup>[[12]](#ref-cli)</sup>
+预算先算清楚，再选择参数。下面固定采用 **vLLM 0.10.2** 的参数语义。<sup>[[12]](#ref-cli)</sup>
 
-| 配置 | 对应的预算或限制 |
+| 配置 | 控制的问题 |
 | --- | --- |
-| `--gpu-memory-utilization` | 规划当前实例模型执行器使用的 GPU 总显存比例，包含权重等用途；不是单独给 KV 的比例，也不是 GPU 计算利用率 |
-| `--kv-cache-memory-bytes` | 直接指定每张 GPU 的 KV 池字节预算；设置后，KV 容量不再由上述比例自动推算 |
-| `--max-model-len` | 服务使用的单请求上下文长度上限，包含输入与输出 |
-| `--max-num-seqs` | 单轮处理的序列数上限；不等于 KV 池保证能容纳的长请求数 |
-| `--block-size` | 每个缓存块容纳的 Token 数，不是字节数 |
-| `--kv-cache-dtype` | KV 存储精度，与权重量化方式分别配置 |
+| `--gpu-memory-utilization` | 当前实例的显存规划比例，涉及权重、KV 等，而非单独给 KV 的比例 |
+| `--kv-cache-memory-bytes` | 直接指定每卡 KV 池大小；设置后不再按上述比例推算 KV 容量 |
+| `--max-model-len` | 单请求输入与输出合计的长度上限 |
+| `--max-num-seqs` | 单轮调度可以处理的序列数上限，不是请求容量保证 |
+| `--block-size` | 每个 KV Block 容纳多少 Token |
+| `--kv-cache-dtype` | KV 的存储精度，独立于权重精度 |
 
-该版本的 `--gpu-memory-utilization` 默认值为 0.9；`--max-model-len` 未指定时从模型配置推导，`--block-size` 与 `--max-num-seqs` 的有效默认值则按平台或使用场景确定。`--kv-cache-dtype auto` 使用模型的数据类型。<sup>[[9]](#ref-vllm-cache)</sup><sup>[[12]](#ref-cli)</sup>
+例如，24 GiB 卡若按 `--gpu-memory-utilization 0.9` 自动规划，执行器预算约为 21.6 GiB，KV 池还需扣除模型与其他开销。若使用 `--kv-cache-memory-bytes`，它直接指定 KV 池预算，权重和工作区仍要另算。<sup>[[9]](#ref-vllm-cache)</sup>
 
-例如，未指定 KV 字节预算、比例设为 0.9 时，24 GiB 卡对应的执行器预算约为 21.6 GiB。自动估算 KV 容量时，要从中扣除权重及其他开销，余下的才归缓存使用。前面的 24 GiB 教学账按表中各项单独设定预算。
+调小 `--max-model-len` 是收紧单请求长度，不等于将整个 KV 池缩小；调大 `--max-num-seqs` 是放宽调度上限，也不会增加物理缓存。下一节的 `--max-num-batched-tokens` 约束的是单轮计算 Token 数，与跨多轮保留的 KV 总容量又是不同的预算。
 
-也可以用 `--kv-cache-memory-bytes` 直接给池分配预算。这时不能再把 `--gpu-memory-utilization` 当作约束这个 KV 池的第二道上限：该版本明确规定，显式 KV 预算会覆盖按比例推算的方式。权重、工作区和运行时仍要另占显存，不能把整张卡的容量都填给 KV 池。<sup>[[12]](#ref-cli)</sup>
-
-把 `--max-model-len` 从 8192 改成 4096，会收紧单条请求的长度，但 KV 池未必随之缩成一半。自动规划时，引擎会通过 profiling（试运行并测量资源开销）估算可交给 KV 的空间，实际容量还取决于执行配置。调大 `--max-num-seqs` 也是一样：它放宽了调度限制，物理缓存却没有因此增加。
-
-下一节还会遇到 `--max-num-batched-tokens`，它约束单轮处理多少 Token。历史 Token 的 KV 可以跨许多轮保留，因此单轮的计算预算和整个服务的缓存容量也要分开。<sup>[[12]](#ref-cli)</sup>
+在该版本中，`--gpu-memory-utilization` 默认是 0.9，`--kv-cache-dtype auto` 沿用模型数据类型；其他参数的有效默认值还受到模型和平台条件影响。<sup>[[12]](#ref-cli)</sup>
 
 ### 可选观察：先算小模型，再看缓存池
 
