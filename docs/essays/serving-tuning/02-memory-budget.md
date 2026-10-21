@@ -95,91 +95,62 @@ Prefill 处理输入 Prompt，建立相应的 KV，并预测第一个输出 Toke
 
 ## 一个 Token 的 KV Cache 有多大？
 
-要算出 6 GiB 能放下多少请求，先得知道每个 Token 的状态占多少显存。
+要知道 6 GiB 能保存多少上下文，先看模型每处理一个 Token 会产生多少 KV。
 
-这里会用到三个模型配置：层数、KV Head 数和 Head 维度。每层都产生自己的 KV；注意力按 Head（注意力头）组织计算，KV Head 数表示该层要保存几组 K、V 向量，Head 维度则是每个向量包含的数值元素数量。因此，“8 个 KV Heads、维度 128”意味着每层、每个 Token 的 K 和 V 各有 $8\times128$ 个元素。
+对各层结构相同、完整保存历史 K、V 的普通 Decoder-only Transformer，可以估算：
 
-每个元素占多少字节，由数据类型决定。例如 FP16 和 BF16 都采用 16 bit 浮点表示，每个元素占 2 Bytes。后文的 $b$ 指这个字节数。
+$$
+m_{\text{KV/token}}=2\times L\times H_{\text{KV}}\times D_{\text{head}}\times b
+$$
 
-先看教学模型：32 层、每层 8 个 KV Heads、Head 维度 128，KV 使用每元素 2 Bytes 的精度。对一个 Token，每层都要保存一份 Key 和一份 Value，把所有层加起来就是：
+这里 $L$ 是层数，$H_{\text{KV}}$ 是每层的 KV Head 数，$D_{\text{head}}$ 是每个 Head 的维度，$b$ 是一个缓存元素的字节数，前面的 2 分别对应 Key 和 Value。
+
+以教学配置为例：32 层、8 个 KV Heads、Head 维度 128，KV 使用 FP16（每元素 2 Bytes）。
 
 $$
 2\times32\times8\times128\times2
 =131072\,\mathrm{Bytes}=128\,\mathrm{KiB/Token}
 $$
 
-一条请求保留 8192 个 Token 的状态，就需要约 1 GiB KV Cache。两条相同长度、独立保存状态的请求，大致需要 2 GiB。
+所以一条请求保留 8192 个 Token 的状态，就需要约 **1 GiB KV Cache**。这也说明：请求状态的大小不单由“7B、14B”这样的模型参数量决定，还与注意力结构有关。
 
-对各层结构相同、使用完整历史注意力的普通 Decoder-only Transformer，可以用下面的式子估算：
+例如，GQA（Grouped-query Attention）让多个 Query Heads 共享较少的 KV Heads。Hugging Face 介绍的 Llama-2-7B 配置有 32 层、32 个 KV Heads、Head 维度 128；同为 FP16，每 Token 的 KV 达到 512 KiB，是教学配置的四倍。<sup>[[4]](#ref-hf-kv)</sup>
 
-$$
-m_{\text{KV/token}}=2\times L\times H_{\text{KV}}\times D_{\text{head}}\times b
-$$
-
-其中，$L$ 是层数，$H_{\text{KV}}$ 是每层的 KV Head 数，$D_{\text{head}}$ 是每个 Head 的维度，$b$ 是每个缓存元素的字节数。前面的 2 来自 Key 和 Value 两份状态。这里假设两者维度相同，并在一张 GPU 上保存所有层的 KV。
-
-采用 GQA（Grouped-query Attention）时，多个 Query Heads 可以共享一组 KV Heads，所以式子里要填 KV Head 数。同为“7B”的模型，也会因 KV 结构不同而产生不同的缓存开销。
-
-Hugging Face 的 KV Cache 量化文章以 Llama-2-7B 为例：32 层、32 个 KV Heads、Head 维度 128。<sup>[[4]](#ref-hf-kv)</sup> 同样按每个缓存元素 2 Bytes 计算，可以与教学配置作个对照：
-
-| 配置 | 每层 KV Heads | 每 Token 的 KV 状态 | 保留 4096 Tokens 的 KV 状态 |
-| --- | ---: | ---: | ---: |
-| 本文教学配置 | 8 | 128 KiB | 0.5 GiB |
-| Llama-2-7B | 32 | 512 KiB | 2 GiB |
-
-其余三项相同，KV Head 数相差四倍，每 Token 的缓存开销也相差四倍。KV Head 数由模型架构决定，部署时应从模型配置中读取。
-
-换一种模型结构，缓存的内容和保留方式也会变。MLA（Multi-head Latent Attention）可能缓存压缩后的潜在表示；滑动窗口注意力可以只保留相应窗口内的状态，混合模型的各层还可能采用不同的保留规则。缓存量化会引入元数据，多 GPU 部署则要考虑各卡怎样分片或复制。遇到这些情况，需要结合模型配置和引擎的缓存实现重新核算，可以参考 vLLM 的 Hybrid KV Cache Manager 文档中对不同注意力类型的讨论。<sup>[[5]](#ref-hybrid-kv)</sup>
-
-后续算例沿用完整历史、单 GPU 模型，按 KV 状态本身估算容量，忽略缓存元数据和对齐等额外开销。部署时用启动日志和实际负载下的测量核对容量。
+不同架构需要使用各自的缓存模型。MLA 可能保存压缩后的潜在表示，滑动窗口注意力不必无限保留全部历史，混合模型还可能包含多种缓存组。<sup>[[5]](#ref-hybrid-kv)</sup> 接下来的计算固定采用这套 **128 KiB/Token、单 GPU、完整历史** 的教学配置。
 
 ## 为什么还要把 KV Cache 分成 Block？
 
-每条请求最多允许 8192 Tokens，按前面的估算，可以先为每条请求留出 1 GiB。但请求若只用了 500 Tokens 就结束，大部分空间从头到尾都没有用上。若改成随着生成扩展一段连续空间，又得处理后面的地址已经被其他请求占用的问题。
+如果每条请求最长允许 8192 Tokens，最直接的办法是先预留 1 GiB。然而，一条只用到 500 Tokens 就结束的请求，并不需要从头到尾占住整块 1 GiB；连续分配又会遇到扩容和碎片问题。
 
-**能不能用多少分多少，又不要求一条请求的缓存连续存放？**
+**Paged KV Cache 的思路，是让缓存随着请求增长按块分配，而不是按照最大长度一次性预留。**
 
-这时就可以借用操作系统分页的思路。
+这借鉴了操作系统的分页：逻辑上连续的数据，可以映射到物理上不连续的空间。<sup>[[6]](#ref-os-paging)</sup><sup>[[7]](#ref-pagedattention)</sup>
 
-### 从虚拟页到 KV 缓存块
+### 从虚拟页到 KV Block
 
-进程的虚拟地址空间，是进程可以使用的虚拟地址集合；物理内存则提供实际保存数据的存储空间。分页把虚拟地址空间划成固定大小的页（Page），把物理内存划成相应大小的页框（Page Frame）。页表记录虚拟页到物理页框的映射，因此相邻虚拟页可以放在不相邻的页框里。<sup>[[6]](#ref-os-paging)</sup>
-
-第 0 节介绍过的 Paged KV Cache 借用了这种思路：把缓存按固定数量的 Token 分成 Block（缓存块），再用映射记录它们在 KV 池中的物理位置。请求随着状态增长取得更多块，释放的块可以回到池中复用，不必一开始就为每条请求占满最大上下文所需的空间。<sup>[[7]](#ref-pagedattention)</sup>
+操作系统把虚拟地址空间划成 Page、把物理内存划成 Page Frame，由页表维护映射。推理引擎也可以把 KV 缓存池划成固定大小的 Block，用映射关系记录一个请求的逻辑 Block 实际存放在哪里。
 
 [![操作系统分页与 KV Block 管理对照：左侧虚拟页 0、1 映射到物理页框 3、1；右侧逻辑 Block 0、1 映射到预分配 KV 池的 P3、P1。未使用的逻辑范围尚未取得物理空间，尾页或尾块的剩余空间与池内空闲块分开显示；需求增长时按需分配，释放后回收复用。](/images/essays/serving-tuning/os-kv-memory-mapping.svg)](/images/essays/serving-tuning/os-kv-memory-mapping.svg)
 
-<small>图 2 · 从操作系统分页到 KV Block（缓存块）管理。右侧物理块来自预分配的 KV 池，图中只展示局部。点击图片可查看原图。</small>
+<small>图 2 · 从虚拟内存分页到 KV Block 管理。映射由推理引擎维护，Block 与操作系统的内存页并非同一结构。</small>
 
-这里借用的是管理思路。KV 的 Block 映射由推理引擎维护，映射的是请求中的数据块与池内存储块；操作系统页表处理的则是虚拟地址到物理地址的转换。KV Block 不等于操作系统常见的 4 KiB 页，分页本身也不会让 GPU 自动把缓存换到 CPU 内存。
-
-### 逻辑顺序与物理位置
-
-假设每个 Block 容纳 16 个 Token，一条已经计算了 35 个 Token 的请求，需要三个逻辑 Block：
+当一个 Block 可以容纳 16 个 Token 时，已经计算 35 个 Token 的请求，需要三个逻辑 Block：
 
 [![一条请求的三个逻辑 Block 依次映射到物理池中的 P3、P6 和 P1。前两块各保存 16 个 Token，最后一块保存 3 个 Token，留下 13 个空位；物理池中的其他空闲块可以分给其他请求。](/images/essays/serving-tuning/kv-block-allocation.svg)](/images/essays/serving-tuning/kv-block-allocation.svg)
 
-<small>图 3 · 35 个 Token 取得三个物理块。块内空位与池内空闲块是两种不同的剩余空间。点击图片可查看原图。</small>
+<small>图 3 · 35 个 Token 使用三个 Block；它们在物理池中可以分散存放。</small>
 
-逻辑 Block 描述请求内 Token 的顺序；物理 Block 是缓存池中实际提供存储的块。P3、P6、P1 可以分散在池里的不同位置，映射保证引擎能找到对应状态。这里把一个 Token 在所有层的缓存一起计账，实际存储还会按层、张量或缓存组组织。
+这三个 Block 能容纳 48 个位置；第 49 个 Token 需要第四块。请求结束后，Block 可以回收给其他请求。**上限为 8192 Tokens，不等于已经占用了 8192 Tokens。**
 
-接下来的 Token 继续填入最后一块，三块能容纳到 48 个 Token。等到需要保存第 49 个 Token 的状态，再分配第四块。8192 个位置是请求的长度上限，Block 则随实际需要逐步分配。
-
-这里的“按需分配”，指请求从 KV 池中取得 Block；池本身的显存可以在启动时就准备好。后面看监控时，还会用到这一区别。
-
-### 分页之后还有浪费吗？
-
-按连续空间分配时，空闲空间可能被分散成许多小段，总量足够却找不到所需大小的连续区域，这叫外部碎片。分页让请求可以取得分散的物理块，减少了对大段连续空间的要求。
-
-分配以整块为单位时，块内部还可能有用不上的空间，这叫**内部碎片**，在本例中也称块内碎片。35 个 Token 用了三块，相当于取得 48 个位置，最后一块有 13 个位置暂时闲置。在不共享 Block 的简化模型里，保存 $T_i$ 个 Token 的请求需要：
+分页把连续空间的大块预留转成按块分配，也带来了尾块空位这样的内部碎片。对一个独占 KV 块的请求：
 
 $$
 B_i=\left\lceil\frac{T_i}{S}\right\rceil
 $$
 
-其中 $S$ 是每块的 Token 数，$\lceil\cdot\rceil$ 表示向上取整。若每个 Token 花 128 KiB、每块 16 Tokens，一个 Block 对应的状态存储就是 2 MiB；35 个 Token 占用的三块一共要 6 MiB。
+其中 $T_i$ 是已保留的 Token 数，$S$ 是每块的 Token 数。35 个 Token、16 Tokens/Block，就需要 3 个 Blocks，最后一块空出 13 个位置。以每 Token 128 KiB 计算，每块对应 2 MiB，三块共占 6 MiB。
 
-块越小，尾部闲置通常越少，但需要管理的块和映射也更多；块越大，管理粒度较粗，尾部浪费可能增加。块大小还受注意力后端和硬件约束，本例选用 16 Tokens 作为教学粒度。
+块小，尾部浪费通常更少，但映射和管理粒度更细；块大则相反。这里的 Block 不等于操作系统常见的 4 KiB 页面，更不意味着缓存会自动换到 CPU 内存。**按需分配的是池内的 Block；KV 池本身的 GPU 显存可以提前分配好。**
 
 ## “上下文有多长”，到底在问哪一个量？
 
