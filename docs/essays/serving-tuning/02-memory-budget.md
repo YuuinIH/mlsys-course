@@ -252,7 +252,7 @@ $$
 
 请求继续生成时，KV 需求随保留长度增长，分别在图中的交点达到池容量：
 
-[![6、12、24 条同长度请求的 KV 需求随保留长度线性增长，分别在每条 8192、4096、2048、2048 Tokens 时达到 6 GiB 池容量。超过这些交点，池便无法同时保留全部请求的状态。](/images/essays/serving-tuning/kv-capacity-boundary.svg)](/images/essays/serving-tuning/kv-capacity-boundary.svg)
+[![6、12、24 条同长度请求的 KV 需求随保留长度线性增长，分别在每条 8192、4096、2048 Tokens 时达到 6 GiB 池容量。超过这些交点，池便无法同时保留全部请求的状态。](/images/essays/serving-tuning/kv-capacity-boundary.svg)](/images/essays/serving-tuning/kv-capacity-boundary.svg)
 
 <small>图 4 · 按每 Token 128 KiB 绘制的容量边界。横轴为每条请求保留的长度，纵轴为所有请求合计的 KV 需求；曲线按连续长度示意，实际按整 Block 分配。</small>
 
